@@ -1,0 +1,21 @@
+{
+    "__class_name": "Canopy",
+    "_checkout": null,
+    "_output_dir": "/home/emencia/Projets",
+    "_repo_dir": "/home/emencia/.cookiecutters/cookiecutter-sveetch-djangoapp",
+    "_sveetch_djangoapp_version": "0.7.0",
+    "_template": "https://github.com/sveetch/cookiecutter-sveetch-djangoapp.git",
+    "app_name": "canopy",
+    "author_email": "support@emencia.com",
+    "author_name": "Emencia",
+    "author_username": "emencia",
+    "include_api": false,
+    "include_cmsplugin": true,
+    "include_frontend": true,
+    "init_git_repository": true,
+    "package_name": "django-canopy",
+    "project_name": "django-canopy",
+    "project_short_description": "A simple contact form with some homemade antispam.",
+    "pypi_username": "emencia",
+    "version": "0.1.0"
+}

@@ -1,0 +1,48 @@
+# virtualenv
+.venv
+
+# pyenv
+.python-version
+
+# Packaging
+build
+dist
+*.egg-info
+search_and_replace.sh
+
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+
+# Site media and builded statics
+/var/
+/sandbox/static/
+/sandbox/static-sources/
+
+# Settings
+localsettings.py
+
+# Unit test / coverage reports
+htmlcov/
+.coverage
+.cache
+.pytest_cache
+nosetests.xml
+coverage.xml
+.tox
+
+# VS Code
+.vscode
+
+# Mac Os
+.DS_Store
+
+# Temp files
+*~
+.~lock*
+
+# Swap files
+*.sw[po]
+
+# Logging files
+*.log

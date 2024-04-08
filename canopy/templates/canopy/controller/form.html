@@ -1,0 +1,13 @@
+{% extends "canopy/base.html" %}
+{% load i18n %}
+{% load crispy_forms_tags %}
+
+{% block app_content %}{% spaceless %}
+    <h2>{% trans "Controller form" %}</h2>
+
+    <form action="." method="post">
+        {% csrf_token %}
+        {{ form }}
+        <input type="submit" value="Submit">
+    </form>
+{% endspaceless %}{% endblock app_content %}
