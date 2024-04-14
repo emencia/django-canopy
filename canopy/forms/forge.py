@@ -24,8 +24,6 @@ class FormClassForge:
         This is somewhat of shortand to get a slot scheme from multiple supported
         types.
 
-        TODO: This may perform some validation on dict or list?
-
         Arguments:
             scheme (object): Either a dict, a list or a Controller instance. Dict or
                 list format must be a valid slot scheme.
@@ -36,7 +34,7 @@ class FormClassForge:
         if isinstance(scheme, list) or isinstance(scheme, tuple):
             scheme = dict(scheme)
         elif isinstance(scheme, Controller):
-            scheme = scheme.as_scheme()
+            scheme = scheme.definitions_scheme()
 
         return scheme
 
@@ -52,7 +50,6 @@ class FormClassForge:
                 msg = _("Slot definition does not exists for given name: {}")
                 raise ControllerError(msg.format(slot["kind"]))
 
-            print("- Slot:", name, slot["kind"])
             definition = definitions[slot["kind"]]
 
             # Get the base defined options and update them with some slot attributes
@@ -95,7 +92,6 @@ class FormClassForge:
         attrs = self.get_form_fields(scheme)
         if extra_attrs:
             attrs.update(extra_attrs)
-        attrs["controller_options"] = None
 
         base_classes = (self.klass, forms.Form,)
 

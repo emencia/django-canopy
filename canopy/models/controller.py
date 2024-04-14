@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils import timezone
+from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-
 
 class Controller(models.Model):
     """
@@ -51,10 +51,22 @@ class Controller(models.Model):
     def __str__(self):
         return self.title
 
-    def as_scheme(self):
+    def definitions_scheme(self, queryset=None):
+        """
+        Returns all controller slot definitions.
+
+        Keyword Arguments:
+            queryset (Queryset): A custom queryset to use instead of the default one
+                which get all controller slot objects.
+
+        Returns:
+            dict: Slot definitions.
+        """
+        queryset = queryset or self.slot_set.all()
+
         return {
             item["name"]: item
-            for item in self.slot_set.all().values(
+            for item in queryset.values(
                 "kind",
                 "label",
                 "name",
@@ -64,6 +76,18 @@ class Controller(models.Model):
                 "initial",
             )
         }
+
+    @cached_property
+    def fields_scheme(self):
+        """
+        Returns the field slot definitions.
+
+        This property exists because we plan to have non field slots.
+
+        Returns:
+            dict: Slot definitions.
+        """
+        return self.definitions_scheme()
 
     def save(self, *args, **kwargs):
         # Auto update 'last_update' value on each save

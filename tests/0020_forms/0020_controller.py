@@ -1,5 +1,7 @@
 from django import forms
 
+from freezegun import freeze_time
+
 from canopy.forms.forge import FormClassForge
 from canopy.factories import ControllerFactory, SlotFactory
 from canopy.models import Entry
@@ -152,10 +154,12 @@ def test_get_form_fields():
     assert fields["foo"].initial == "Lorem ipsum"
 
 
-def test_get_form():
+def test_get_form(db):
     """
     Method should return a form class.
     """
+    controller = ControllerFactory()
+
     forge = FormClassForge()
 
     ControllerForm = forge.get_form({
@@ -163,7 +167,7 @@ def test_get_form():
             "kind": "text-simple",
             "label": "Foo",
             "name": "foo",
-            "required": False,
+            "required": True,
             "position": 1,
             "help_text": "",
             "initial": ""
@@ -171,7 +175,7 @@ def test_get_form():
     })
 
     # Init unbound form and check basic form field render
-    form = ControllerForm()
+    form = ControllerForm(controller=controller)
     dom = html_pyquery(form.as_p())
     input_foo = dom.find("input#id_foo")
     assert len(input_foo) == 1
@@ -180,39 +184,62 @@ def test_get_form():
     assert len(label_foo) == 1
     assert label_foo.text() == "Foo:"
 
+    # Init form without any data
+    form = ControllerForm({}, controller=controller)
+    assert form.is_valid() is False
+
     # Init form with data
-    form = ControllerForm({"foo": "Hello world!"})
+    form = ControllerForm({"foo": "Hello world!"}, controller=controller)
     dom = html_pyquery(form.as_p())
     input_foo = dom.find("input#id_foo")
     assert input_foo.attr("value") == "Hello world!"
+    assert form.is_valid() is True
 
 
-def test_form_save():
+@freeze_time("2012-10-15 10:00:00")
+def test_form_save(db):
     """
-    TODO
+    Valid submited data should be saved as Entry object.
     """
+    controller = ControllerFactory()
+    SlotFactory(
+        controller=controller,
+        kind="text-simple",
+        label="Full name",
+        name="fullname",
+        required=True,
+    )
+    SlotFactory(
+        controller=controller,
+        kind="text-simple",
+        label="Email",
+        name="email",
+        required=False,
+    )
+
     forge = FormClassForge()
+    ControllerForm = forge.get_form(controller)
 
-    ControllerForm = forge.get_form({
-        "foo": {
-            "kind": "text-simple",
-            "label": "Foo",
-            "name": "foo",
-            "required": False,
-            "position": 1,
-            "help_text": "",
-            "initial": ""
-        },
-    })
+    # A dummy entry that should not be saved
+    form = ControllerForm({"fullname": "Anne Onymous"}, controller=controller)
+    assert form.is_valid() is True
+    form.save(commit=False)
 
-    # Init form with data
-    form = ControllerForm({"foo": "Hello world!"})
-    dom = html_pyquery(form.as_p())
-    input_foo = dom.find("input#id_foo")
-    assert input_foo.attr("value") == "Hello world!"
+    # Data with non required email field with a blank value
+    form = ControllerForm({"fullname": "Donald Duck"}, controller=controller)
+    assert form.is_valid() is True
+    donald = form.save()
+    assert donald.data == {"fullname": "Donald Duck", "email": ""}
 
-    created = form.save()
-    print(created)
+    # Data with all field filled
+    form = ControllerForm(
+        {"fullname": "Picsou McDuck", "email": "picsou@picsou.com"},
+        controller=controller
+    )
+    assert form.is_valid() is True
+    picsou = form.save()
+    assert picsou.data == {"fullname": "Picsou McDuck", "email": "picsou@picsou.com"}
 
-    assert 1 == 42
-
+    # Only commited objects should exist
+    ids = controller.entry_set.all().values_list("id", flat=True).order_by("id")
+    assert list(ids) == [donald.id, picsou.id]

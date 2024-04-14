@@ -37,4 +37,7 @@ class Entry(models.Model):
         verbose_name_plural = _("Form slots")
 
     def __str__(self):
-        return self.label
+        return "{controller}: {created}".format(
+            controller=self.controller.title,
+            created=self.created.isoformat(timespec="seconds")
+        )

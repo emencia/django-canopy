@@ -97,3 +97,26 @@ def test_factory_uniqueness(db, settings):
     slot_foo_bis.full_clean()
 
     assert Slot.objects.count() == 2
+
+
+@pytest.mark.parametrize("name, message", [
+    ("_plop", "Slot name can not start with underscore character."),
+    ("plop-plip", "Slot name must be a valid Python identifier."),
+    ("plop plip", "Slot name must be a valid Python identifier."),
+    ("1plop", "Slot name must be a valid Python identifier."),
+    ("pass", "Slot name can not be a reserved Python keyword."),
+    ("False", "Slot name can not be a reserved Python keyword."),
+    ("controller", "Slot name can not be a reserved Controller keyword."),
+])
+def test_name_validation(db, name, message):
+    """
+    Invalid name should raise a validation error from model.
+    """
+    slot = SlotFactory(name=name)
+
+    with pytest.raises(ValidationError) as excinfo:
+        slot.full_clean()
+
+    # import json
+    # print(json.dumps(excinfo.value.message_dict, indent=4))
+    assert excinfo.value.message_dict == {"name": [message]}

@@ -5,6 +5,11 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 
 
+# Reserved controller keywords to not override form class properties/methods, it should
+# include also the ones from 'forms.Form'
+FORBIDDEN_SLOT_NAMES = ("controller", "save")
+
+
 class Slot(models.Model):
     """
     Slot defines a field for a Controller, generally a form input.
@@ -95,25 +100,35 @@ class Slot(models.Model):
         return self.label
 
     def clean_fields(self, exclude=None):
+        """
+        Apply custom validation on field, especially for the ``name`` value.
+
+        TODO:
+        Current name field value validation is possibly not enough, a name can
+        actually something from ``forms.Form``. We could use dir() on 'forms.Form' and
+        reserve everything that does not start with '_'.
+
+        By the way, the documentation should have a dedicated part to list all the
+        rules for slot name in a comprehensive way so it can be used for users.
+        """
         super().clean_fields(exclude=exclude)
 
         if self.name.startswith("_"):
             raise ValidationError({
-                "status": _("Slot name can not start with underscore character."),
+                "name": _("Slot name can not start with underscore character."),
             })
 
         if not self.name.isidentifier():
             raise ValidationError({
-                "status": _("Slot name must be a valid Python identifier."),
+                "name": _("Slot name must be a valid Python identifier."),
             })
 
         if iskeyword(self.name):
             raise ValidationError({
-                "status": _("Slot name can not be a reserved Python keyword."),
+                "name": _("Slot name can not be a reserved Python keyword."),
             })
 
-        FORBIDDEN_SLOT_NAMES = ("controller_options",)
         if self.name in FORBIDDEN_SLOT_NAMES:
             raise ValidationError({
-                "status": _("Slot name can not be a reserved Controller keyword."),
+                "name": _("Slot name can not be a reserved Controller keyword."),
             })
