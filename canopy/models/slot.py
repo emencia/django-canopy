@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
+from ..choices import get_kind_choices, get_kind_default
+
 
 # Reserved controller keywords to not override form class properties/methods, it should
 # include also the ones from 'forms.Form'
@@ -16,8 +18,6 @@ class Slot(models.Model):
     """
     controller = models.ForeignKey(
         "canopy.controller",
-        null=True,
-        default=None,
         on_delete=models.CASCADE,
     )
     """
@@ -27,13 +27,15 @@ class Slot(models.Model):
     kind = models.CharField(
         _("element type"),
         max_length=50,
+        choices=get_kind_choices(),
+        default=get_kind_default(),
     )
     """
     Required slot kind string. Determine the kind of slot.
     """
 
     label = models.CharField(
-        _("label"),
+        _("field label"),
         max_length=100,
     )
     """
@@ -42,7 +44,7 @@ class Slot(models.Model):
     """
 
     name = models.CharField(
-        _("name"),
+        _("field name"),
         max_length=100,
     )
     """

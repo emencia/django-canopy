@@ -40,10 +40,7 @@ def test_model_required_fields(db):
     # print(json.dumps(excinfo.value.message_dict, indent=4))
     assert excinfo.value.message_dict == {
         "controller": [
-            "This field cannot be blank."
-        ],
-        "kind": [
-            "This field cannot be blank."
+            "This field cannot be null."
         ],
         "label": [
             "This field cannot be blank."

@@ -11,8 +11,8 @@ from django.urls import include, path
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("canopy/", include("canopy.urls")),
 ] + i18n_patterns(
+    path("canopy/", include("canopy.urls")),
     path("", include("cms.urls")),
 )
 

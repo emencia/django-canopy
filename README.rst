@@ -8,11 +8,13 @@ Canopy
 
 Request form generator.
 
+This is yet a prototype, many features are planned but far from implementation.
+
 
 Features
 ********
 
-* TODO;
+* Build a form with the fields you need;
 
 
 Dependencies

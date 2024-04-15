@@ -1,7 +1,9 @@
 from django.db import models
+from django.urls import reverse
 from django.utils import timezone
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
+
 
 class Controller(models.Model):
     """
@@ -40,8 +42,14 @@ class Controller(models.Model):
     """
 
     created = models.DateTimeField(auto_now_add=True)
+    """
+    Datetime of object creation, automatically filled.
+    """
 
     last_update = models.DateTimeField(default=timezone.now)
+    """
+    Datetime of last object update, automatically filled.
+    """
 
     class Meta:
         ordering = ["title"]
@@ -88,6 +96,15 @@ class Controller(models.Model):
             dict: Slot definitions.
         """
         return self.definitions_scheme()
+
+    def get_absolute_url(self):
+        """
+        Return absolute URL to the category detail view.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("canopy:controller-form", kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
         # Auto update 'last_update' value on each save

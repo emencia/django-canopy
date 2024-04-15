@@ -30,11 +30,14 @@ class Entry(models.Model):
     """
 
     created = models.DateTimeField(auto_now_add=True)
+    """
+    Datetime of object creation, automatically filled.
+    """
 
     class Meta:
         ordering = ["-created"]
-        verbose_name = _("Form slot")
-        verbose_name_plural = _("Form slots")
+        verbose_name = _("Form entry")
+        verbose_name_plural = _("Form entries")
 
     def __str__(self):
         return "{controller}: {created}".format(

@@ -23,7 +23,13 @@ class ControllerBaseForm:
     """
 
     def __init__(self, *args, **kwargs):
-        self.controller = kwargs.pop("controller", None)
+        try:
+            self.controller = kwargs.pop("controller")
+        except KeyError:
+            raise KeyError(
+                "Controller form requires a Controller object to be given as a non "
+                "positional argument."
+            )
 
         super().__init__(*args, **kwargs)
 

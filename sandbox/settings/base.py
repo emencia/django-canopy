@@ -155,6 +155,16 @@ EMAIL_PORT = None
 
 
 """
+Canopy-form configuration
+"""
+from canopy.settings import *  # noqa: E402,F401,F403
+
+INSTALLED_APPS.extend([
+    "canopy",
+])
+
+
+"""
 DjangoCMS configuration
 """
 
@@ -194,13 +204,3 @@ TEMPLATES[0]["OPTIONS"]["context_processors"].extend([
 CMS_TEMPLATES = [
     ("pages/default.html", "Default"),
 ]
-
-
-"""
-Canopy-form configuration
-"""
-from canopy.settings import *  # noqa: E402,F401,F403
-
-INSTALLED_APPS.extend([
-    "canopy",
-])

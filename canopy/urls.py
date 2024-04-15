@@ -6,6 +6,11 @@ app_name = "canopy"
 
 
 urlpatterns = [
-    path("controller/", ControllerFormView.as_view(), name="controller-form"),
-    path("success/", ControllerSuccessView.as_view(), name="controller-success"),
+    path("form/success/", ControllerSuccessView.as_view(), name="controller-success"),
+
+    path(
+        "form/<slug:slug>/",
+        ControllerFormView.as_view(),
+        name="controller-form"
+    ),
 ]
