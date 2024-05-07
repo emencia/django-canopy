@@ -11,6 +11,24 @@ from django.utils.translation import gettext_lazy as _
 
 
 BASE_DEFINITIONS = {
+    "boolean": {
+        "name": _("Boolean"),
+        "field": forms.BooleanField,
+        "kwargs": {},
+    },
+    "email": {
+        "name": _("Email"),
+        "field": forms.EmailField,
+        "kwargs": {},
+    },
+    "date": {
+        "name": _("Date"),
+        "field": forms.DateField,
+        # Date format would need to be set, here formatted for the default language.
+        # Another definition could be "localized-date" to format depending current
+        # language
+        "kwargs": {},
+    },
     "text-simple": {
         "name": _("Simple text"),
         "field": forms.CharField,
@@ -25,14 +43,6 @@ BASE_DEFINITIONS = {
             "max_length": 3000,
             "widget": forms.Textarea,
         },
-    },
-    "date": {
-        "name": _("Date"),
-        "field": forms.DateField,
-        # Date format would need to be set, here formatted for the default language.
-        # Another definition could be "localized-date" to format depending current
-        # language
-        "kwargs": {},
     },
 }
 """
