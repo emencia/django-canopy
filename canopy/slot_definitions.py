@@ -2,8 +2,13 @@
 Slot definitions
 ----------------
 
-A definition is a shortand to a specific field behaviors with pre-defined options, not
-only a simple form field.
+The base definitions is used as available slot kinds and by the forge to build fields
+from given slots.
+
+A definition includes field options and possibly also widget options.
+
+Slot field and widget are defined directly as classes but never as object instances
+since the form forge will instanciate them itself and apply options.
 
 """
 from django import forms
@@ -14,12 +19,12 @@ BASE_DEFINITIONS = {
     "boolean": {
         "name": _("Boolean"),
         "field": forms.BooleanField,
-        "kwargs": {},
+        "field_options": {},
     },
     "email": {
         "name": _("Email"),
         "field": forms.EmailField,
-        "kwargs": {},
+        "field_options": {},
     },
     "date": {
         "name": _("Date"),
@@ -27,19 +32,19 @@ BASE_DEFINITIONS = {
         # Date format would need to be set, here formatted for the default language.
         # Another definition could be "localized-date" to format depending current
         # language
-        "kwargs": {},
+        "field_options": {},
     },
     "text-simple": {
         "name": _("Simple text"),
         "field": forms.CharField,
-        "kwargs": {
+        "field_options": {
             "max_length": 255,
         },
     },
     "text-multiline": {
         "name": _("Multiline text"),
         "field": forms.CharField,
-        "kwargs": {
+        "field_options": {
             "max_length": 3000,
             "widget": forms.Textarea,
         },

@@ -12,6 +12,10 @@ from ..choices import get_kind_choices, get_kind_default
 FORBIDDEN_SLOT_NAMES = ("controller", "save")
 
 
+def empty_fresh_dictionnary():
+    return dict()
+
+
 class Slot(models.Model):
     """
     Slot defines a field for a Controller, generally a form input.
@@ -83,6 +87,11 @@ class Slot(models.Model):
     Optional initial value.
     """
 
+    options = models.JSONField(blank=True, default=empty_fresh_dictionnary)
+    """
+    Optional JSON value to hold input and widget extra options.
+    """
+
     class Meta:
         ordering = ["label"]
         verbose_name = _("Form slot")
@@ -107,7 +116,7 @@ class Slot(models.Model):
 
         TODO:
         Current name field value validation is possibly not enough, a name can
-        actually something from ``forms.Form``. We could use dir() on 'forms.Form' and
+        actually be something from ``forms.Form``. We could use dir() on 'forms.Form' and
         reserve everything that does not start with '_'.
 
         By the way, the documentation should have a dedicated part to list all the

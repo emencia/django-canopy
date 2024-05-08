@@ -47,7 +47,7 @@ def test_model_required_fields(db):
         ],
         "name": [
             "This field cannot be blank."
-        ]
+        ],
     }
 
 
@@ -117,3 +117,37 @@ def test_name_validation(db, name, message):
     # import json
     # print(json.dumps(excinfo.value.message_dict, indent=4))
     assert excinfo.value.message_dict == {"name": [message]}
+
+
+def test_options_json(db):
+    """
+    Demonstrate JSONfield basic behaviors.
+    """
+    controller = ControllerFactory()
+
+    slot = Slot(
+        controller=controller,
+        label="name",
+        name="Name",
+        kind="text-simple",
+    )
+    slot.full_clean()
+    slot.save()
+    # Without any value, slot options is an empty dict
+    assert isinstance(slot.options, dict) is True
+    assert slot.options == {}
+
+    # There is no magic coercing on string
+    slot.options = "{}"
+    slot.full_clean()
+    slot.save()
+    assert isinstance(slot.options, str) is True
+
+    # Giving proper type like dict is respected and well saved
+    slot.options = {"plip": "plop"}
+    slot.full_clean()
+    slot.save()
+    assert isinstance(slot.options, dict) is True
+    assert slot.options["plip"] == "plop"
+    # There is not magic attribute getter on the JSON value
+    assert hasattr(slot.options, "plip") is False

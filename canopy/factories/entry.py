@@ -10,10 +10,16 @@ class EntryFactory(factory.django.DjangoModelFactory):
     Factory to create instance of a Entry model.
     """
     controller = factory.SubFactory(ControllerFactory)
-    data = "{}"
 
     class Meta:
         model = Entry
+
+    @factory.lazy_attribute
+    def data(self):
+        """
+        Get dummy value for JSON data
+        """
+        return {"foo": "bar"}
 
     @factory.lazy_attribute
     def version(self):

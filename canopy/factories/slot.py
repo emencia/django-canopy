@@ -20,3 +20,10 @@ class SlotFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Slot
+
+    @factory.lazy_attribute
+    def options(self):
+        """
+        Return an empty fresh dictionnary.
+        """
+        return "{}"

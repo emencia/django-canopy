@@ -7,16 +7,22 @@ class ControllerBaseForm:
     """
     Abstract form class for Canopy controller mechanics.
 
-    It is intended to work along ``forms.Form``, means the abstract loads after it.
+    It is intended to work along ``forms.Form``, meaning this abstract should be loaded
+    after base form class.
+
+    .. Note::
+        Almost all internal methods not intended to overwrite ``forms.Form`` methods,
+        are to be prefixed with an underscore to ensure they won't break some obscure
+        ``forms.Form`` mechanic.
 
     TODO:
-        We should have a way to have silent and automatically filled virtual fields.
+        We should have a way to have silent and automatically fill virtual fields.
         Like a field to store the IP adress from user request. The field would not be
         displayed but filled from form (it would need to be passed the Django request
         object).
 
         In a similar way we could have non field slot, like a HTML slot that would
-        allow to insert HTML between fields but it is not taken in account from 'save()'
+        allow to insert HTML between fields but will be ignored from 'save()'.
 
     Keyword Arguments:
         controller (Controller): Required Controller model object.

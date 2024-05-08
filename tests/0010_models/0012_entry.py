@@ -14,7 +14,7 @@ def test_model_basic(settings, db):
 
     entry = Entry(
         controller=controller,
-        data="{}",
+        data={"foo": "bar"},
     )
     entry.full_clean()
     entry.save()
@@ -31,8 +31,6 @@ def test_model_required_fields(db):
     with pytest.raises(ValidationError) as excinfo:
         entry.full_clean()
 
-    # import json
-    # print(json.dumps(excinfo.value.message_dict, indent=4))
     assert excinfo.value.message_dict == {
         "controller": [
             "This field cannot be blank."
