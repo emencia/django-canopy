@@ -16,6 +16,18 @@ from django.utils.translation import gettext_lazy as _
 
 
 BASE_DEFINITIONS = {
+    # TODO: New definition to implement, more obvious and well structured
+    # "foobar": {
+    #     "name": _("Boolean"),
+    #     "field": {
+    #         "class": forms.BooleanField,
+    #         "options": {},
+    #         "widget": {
+    #             "class": forms.Textarea,
+    #             "options": {},
+    #         },
+    #     },
+    # },
     "boolean": {
         "name": _("Boolean"),
         "field": forms.BooleanField,
@@ -47,6 +59,7 @@ BASE_DEFINITIONS = {
         "field_options": {
             "max_length": 3000,
             "widget": forms.Textarea,
+            # "widget_options": {},
         },
     },
 }

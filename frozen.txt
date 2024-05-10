@@ -1,0 +1,16 @@
+# Frozen requirement versions from '0.2.0rc3' installation
+Django==4.2.11
+django-cms==3.11.5
+djangocms-text-ckeditor==5.1.5
+factory-boy==3.3.0
+flake8==7.0.0
+freezegun==1.4.0
+furo==2023.7.26
+livereload==2.6.3
+pyquery==2.0.0
+pytest==8.1.1
+pytest-django==4.8.0
+Sphinx==7.2.6
+sphinx-copybutton==0.5.2
+tox==4.14.2
+twine==5.0.0

@@ -5,7 +5,7 @@ from django.db.utils import IntegrityError
 from django.db import transaction
 
 from canopy.factories import ControllerFactory, SlotFactory
-from canopy.models import Slot
+from canopy.models import empty_fresh_dictionnary, Slot
 
 
 def test_model_basic(settings, db):
@@ -114,14 +114,41 @@ def test_name_validation(db, name, message):
     with pytest.raises(ValidationError) as excinfo:
         slot.full_clean()
 
+    assert excinfo.value.message_dict == {"name": [message]}
+
+
+@pytest.mark.parametrize("value", [
+    "{}",
+    [],
+    {},
+    {"foo": "bar"},
+    {"foo": "bar", "field": "plop", "widget": "plip"},
+])
+def test_options_validation(db, value):
+    """
+    Invalid options value should raise a validation error from model.
+    """
+    slot = SlotFactory(options=value)
+
+    with pytest.raises(ValidationError) as excinfo:
+        slot.full_clean()
+
     # import json
     # print(json.dumps(excinfo.value.message_dict, indent=4))
-    assert excinfo.value.message_dict == {"name": [message]}
+    assert excinfo.value.message_dict == {
+        "options": [
+            "Slot options must be a dictionnary with items 'field' and 'widget'"
+        ]
+    }
 
 
 def test_options_json(db):
     """
     Demonstrate JSONfield basic behaviors.
+
+    .. Warning::
+        This bypass model custom validation or the attempts would fails. This test
+        could go to trash if it brings test failures.
     """
     controller = ControllerFactory()
 
@@ -135,17 +162,17 @@ def test_options_json(db):
     slot.save()
     # Without any value, slot options is an empty dict
     assert isinstance(slot.options, dict) is True
-    assert slot.options == {}
+    assert slot.options == empty_fresh_dictionnary()
 
     # There is no magic coercing on string
     slot.options = "{}"
-    slot.full_clean()
+    # slot.full_clean()
     slot.save()
     assert isinstance(slot.options, str) is True
 
     # Giving proper type like dict is respected and well saved
     slot.options = {"plip": "plop"}
-    slot.full_clean()
+    # slot.full_clean()
     slot.save()
     assert isinstance(slot.options, dict) is True
     assert slot.options["plip"] == "plop"

@@ -13,7 +13,10 @@ FORBIDDEN_SLOT_NAMES = ("controller", "save")
 
 
 def empty_fresh_dictionnary():
-    return dict()
+    return {
+        "field": {},
+        "widget": {},
+    }
 
 
 class Slot(models.Model):
@@ -116,8 +119,8 @@ class Slot(models.Model):
 
         TODO:
         Current name field value validation is possibly not enough, a name can
-        actually be something from ``forms.Form``. We could use dir() on 'forms.Form' and
-        reserve everything that does not start with '_'.
+        actually be something from ``forms.Form``. We could use dir() on 'forms.Form'
+        and reserve everything that does not start with '_'.
 
         By the way, the documentation should have a dedicated part to list all the
         rules for slot name in a comprehensive way so it can be used for users.
@@ -142,4 +145,15 @@ class Slot(models.Model):
         if self.name in FORBIDDEN_SLOT_NAMES:
             raise ValidationError({
                 "name": _("Slot name can not be a reserved Controller keyword."),
+            })
+
+        if (
+            not isinstance(self.options, dict) or
+            sorted(self.options.keys()) != ["field", "widget"]
+        ):
+            raise ValidationError({
+                "options": _(
+                    "Slot options must be a dictionnary with items 'field' and "
+                    "'widget'"
+                ),
             })

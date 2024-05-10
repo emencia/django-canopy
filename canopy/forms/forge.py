@@ -6,7 +6,7 @@ from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 
 from ..exceptions import ControllerError
-from ..models import Controller
+from ..models import Controller, Slot
 from .controller import ControllerBaseForm
 
 
@@ -16,6 +16,7 @@ class FormClassForge:
     """
     def __init__(self, default_klass=None):
         self.default_klass = default_klass or ControllerBaseForm
+        self.slot_options_decoder = Slot._meta.get_field("options").decoder
 
     def get_definitions(self, definitions=None):
         """
@@ -67,15 +68,20 @@ class FormClassForge:
         """
         fields = {}
 
+        # Build field for each slot
         for name, slot in scheme.items():
             if slot["kind"] not in definitions:
                 msg = _("Slot definition does not exists for given name: {}")
                 raise ControllerError(msg.format(slot["kind"]))
 
+            # Get the slot definition according to its kind
             definition = definitions[slot["kind"]]
 
-            # Get the base defined options from definitions
+            # Get the base field and widget options from definition
             field_options = copy.deepcopy(definition["field_options"])
+            widget_class = field_options.pop("widget", None)
+            widget_options = field_options.pop("widget_options", {})
+
             # Then update options with some from slot attributes
             field_options.update({
                 "label": slot["label"],
@@ -83,10 +89,34 @@ class FormClassForge:
                 "help_text": slot["help_text"],
                 "required": slot["required"],
             })
-            # TODO: manage an item "widget_options"
-            # TODO: field (and widget) option from JSONfield
 
-            # Register built field in field map
+            """
+            TODO: Now we have the slot options, we will have to unpack its content to
+            distinct field options and widget options.
+
+            Expected 'options' data structure
+            {
+                "field": {},
+                "widget": {},
+            }
+
+            Slot model would probably have to include validation on this structure.
+            """
+            # print("📌 get_form_fields Slot:", slot)
+            # print("📌 get_form_fields Slot options:", slot["options"])
+            # extra_field_options = slot["options"].pop("field", {})
+            # extra_widget_options = slot["options"].pop("widget", {})
+
+            # Append possible widget with optional if any
+            if widget_class:
+                if not widget_options:
+                    widget = widget_class
+                else:
+                    widget = widget_class(attrs=widget_options)
+
+                field_options["widget"] = widget
+
+            # Initialize and register field with its options
             fields[name] = definition["field"](**field_options)
 
         return fields

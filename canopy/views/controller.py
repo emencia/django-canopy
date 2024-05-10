@@ -57,7 +57,7 @@ class ControllerFormView(FormView):
         """
         Save request as an Entry when submitted form data has been validated.
         """
-        created = form.save()
+        form.save()
 
         return super().form_valid(form)
 

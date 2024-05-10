@@ -63,6 +63,11 @@ class Controller(models.Model):
         """
         Returns all controller slot definitions.
 
+        .. Note::
+            Since hee we use ``Queryset.values()`` to get slots, the options value will
+            be the plain string for the JSON data. You will need to decode (like
+            with ``json.loads``) yourself if needed.
+
         Keyword Arguments:
             queryset (Queryset): A custom queryset to use instead of the default one
                 which get all controller slot objects.
@@ -82,6 +87,7 @@ class Controller(models.Model):
                 "position",
                 "help_text",
                 "initial",
+                "options",
             )
         }
 

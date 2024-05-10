@@ -1,6 +1,6 @@
 import factory
 
-from ..models import Slot
+from ..models import empty_fresh_dictionnary, Slot
 
 from .controller import ControllerFactory
 
@@ -24,6 +24,6 @@ class SlotFactory(factory.django.DjangoModelFactory):
     @factory.lazy_attribute
     def options(self):
         """
-        Return an empty fresh dictionnary.
+        Return an initial fresh dictionnary.
         """
-        return "{}"
+        return empty_fresh_dictionnary()

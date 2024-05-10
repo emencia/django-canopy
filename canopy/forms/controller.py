@@ -1,6 +1,4 @@
-from django.conf import settings
-
-from ..models import Controller, Entry
+from ..models import Entry
 
 
 class ControllerBaseForm:
