@@ -6,7 +6,7 @@ from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 
 from ..exceptions import ControllerError
-from ..models import Controller, Slot
+from ..models import Controller
 from .controller import ControllerBaseForm
 
 
@@ -16,7 +16,6 @@ class FormClassForge:
     """
     def __init__(self, default_klass=None):
         self.default_klass = default_klass or ControllerBaseForm
-        self.slot_options_decoder = Slot._meta.get_field("options").decoder
 
     def get_definitions(self, definitions=None):
         """
@@ -56,7 +55,7 @@ class FormClassForge:
         if isinstance(scheme, list) or isinstance(scheme, tuple):
             scheme = dict(scheme)
         elif isinstance(scheme, Controller):
-            scheme = scheme.definitions_scheme()
+            scheme = scheme.slot_schemes()
 
         return scheme
 
@@ -88,14 +87,8 @@ class FormClassForge:
             "required": slot["required"],
         })
 
-        """
-        TODO: Now we have the slot options, we will have to unpack its content to
-        distinct field options and widget options.
-        """
-        # print("📌 get_form_fields Slot:", slot)
-        # print("📌 get_form_fields Slot options:", slot["options"])
-        # extra_field_options = slot["options"].pop("field", {})
-        # extra_widget_options = slot["options"].pop("widget", {})
+        # extra_field_options = slot["field_options"]
+        # extra_widget_options = slot["widget_options"]
 
         # Append possible widget with optional if any
         if widget_class:

@@ -59,11 +59,9 @@ class Controller(models.Model):
     def __str__(self):
         return self.title
 
-    def definitions_scheme(self, queryset=None):
+    def slot_schemes(self, queryset=None):
         """
         Returns all controller slot definitions.
-
-        TODO: Rename to "slot_definitions"
 
         .. Note::
             Since hee we use ``Queryset.values()`` to get slots, the options value will
@@ -89,21 +87,22 @@ class Controller(models.Model):
                 "position",
                 "help_text",
                 "initial",
-                "options",
+                "field_options",
+                "widget_options",
             )
         }
 
     @cached_property
-    def fields_definitions(self):
+    def fields_schemes(self):
         """
-        Returns the field slot definitions.
+        Returns the field slot parameters schemes.
 
-        This property exists because we plan to have non field slots.
+        NOTE: This property exists because we plan to have non field slots.
 
         Returns:
             dict: Slot definitions.
         """
-        return self.definitions_scheme()
+        return self.slot_schemes()
 
     def get_absolute_url(self):
         """

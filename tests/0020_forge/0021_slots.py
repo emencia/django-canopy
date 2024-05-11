@@ -83,7 +83,8 @@ def test_get_slot_scheme_from_controller(db):
             "position": 1,
             "help_text": "",
             "initial": "",
-            "options": empty_fresh_dictionnary(),
+            "field_options": empty_fresh_dictionnary(),
+            "widget_options": empty_fresh_dictionnary(),
         },
         "bar": {
             "kind": "text-simple",
@@ -93,6 +94,7 @@ def test_get_slot_scheme_from_controller(db):
             "position": 2,
             "help_text": "",
             "initial": "",
-            "options": empty_fresh_dictionnary(),
+            "field_options": empty_fresh_dictionnary(),
+            "widget_options": empty_fresh_dictionnary(),
         }
     }

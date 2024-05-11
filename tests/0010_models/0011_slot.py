@@ -120,24 +120,30 @@ def test_name_validation(db, name, message):
 @pytest.mark.parametrize("value", [
     "{}",
     [],
-    {},
-    {"foo": "bar"},
-    {"foo": "bar", "field": "plop", "widget": "plip"},
 ])
 def test_options_validation(db, value):
     """
-    Invalid options value should raise a validation error from model.
+    Invalid field or widget options value should raise a validation error from model.
     """
-    slot = SlotFactory(options=value)
+    slot = SlotFactory(field_options=value)
 
     with pytest.raises(ValidationError) as excinfo:
         slot.full_clean()
 
-    # import json
-    # print(json.dumps(excinfo.value.message_dict, indent=4))
     assert excinfo.value.message_dict == {
-        "options": [
-            "Slot options must be a dictionnary with items 'field' and 'widget'"
+        "field_options": [
+            "Slot field options must be a dictionnary."
+        ]
+    }
+
+    slot = SlotFactory(widget_options=value)
+
+    with pytest.raises(ValidationError) as excinfo:
+        slot.full_clean()
+
+    assert excinfo.value.message_dict == {
+        "widget_options": [
+            "Slot widget options must be a dictionnary."
         ]
     }
 
@@ -161,20 +167,20 @@ def test_options_json(db):
     slot.full_clean()
     slot.save()
     # Without any value, slot options is an empty dict
-    assert isinstance(slot.options, dict) is True
-    assert slot.options == empty_fresh_dictionnary()
+    assert isinstance(slot.field_options, dict) is True
+    assert slot.field_options == empty_fresh_dictionnary()
 
     # There is no magic coercing on string
-    slot.options = "{}"
+    slot.field_options = "{}"
     # slot.full_clean()
     slot.save()
-    assert isinstance(slot.options, str) is True
+    assert isinstance(slot.field_options, str) is True
 
     # Giving proper type like dict is respected and well saved
-    slot.options = {"plip": "plop"}
+    slot.field_options = {"plip": "plop"}
     # slot.full_clean()
     slot.save()
-    assert isinstance(slot.options, dict) is True
-    assert slot.options["plip"] == "plop"
+    assert isinstance(slot.field_options, dict) is True
+    assert slot.field_options["plip"] == "plop"
     # There is not magic attribute getter on the JSON value
-    assert hasattr(slot.options, "plip") is False
+    assert hasattr(slot.field_options, "plip") is False

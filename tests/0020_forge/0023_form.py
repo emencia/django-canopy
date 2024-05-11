@@ -22,7 +22,8 @@ def test_get_form(db):
             "position": 1,
             "help_text": "",
             "initial": "",
-            "options": {},
+            "field_options": {},
+            "widget_options": {},
         },
     })
 

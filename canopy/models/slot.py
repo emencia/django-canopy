@@ -13,10 +13,7 @@ FORBIDDEN_SLOT_NAMES = ("controller", "save")
 
 
 def empty_fresh_dictionnary():
-    return {
-        "field": {},
-        "widget": {},
-    }
+    return {}
 
 
 class Slot(models.Model):
@@ -90,12 +87,14 @@ class Slot(models.Model):
     Optional initial value.
     """
 
-    options = models.JSONField(blank=True, default=empty_fresh_dictionnary)
+    field_options = models.JSONField(blank=True, default=empty_fresh_dictionnary)
     """
-    Optional JSON value to hold input and widget extra options.
+    Optional JSON value to hold input extra options.
+    """
 
-    TODO: Finally, it may be better to have distincs options attribute for field and
-    widget.
+    widget_options = models.JSONField(blank=True, default=empty_fresh_dictionnary)
+    """
+    Optional JSON value to hold widget extra options.
     """
 
     class Meta:
@@ -150,13 +149,16 @@ class Slot(models.Model):
                 "name": _("Slot name can not be a reserved Controller keyword."),
             })
 
-        if (
-            not isinstance(self.options, dict) or
-            sorted(self.options.keys()) != ["field", "widget"]
-        ):
+        if not isinstance(self.field_options, dict):
             raise ValidationError({
-                "options": _(
-                    "Slot options must be a dictionnary with items 'field' and "
-                    "'widget'"
+                "field_options": _(
+                    "Slot field options must be a dictionnary."
+                ),
+            })
+
+        if not isinstance(self.widget_options, dict):
+            raise ValidationError({
+                "widget_options": _(
+                    "Slot widget options must be a dictionnary."
                 ),
             })

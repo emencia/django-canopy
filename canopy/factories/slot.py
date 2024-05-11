@@ -22,7 +22,14 @@ class SlotFactory(factory.django.DjangoModelFactory):
         model = Slot
 
     @factory.lazy_attribute
-    def options(self):
+    def field_options(self):
+        """
+        Return an initial fresh dictionnary.
+        """
+        return empty_fresh_dictionnary()
+
+    @factory.lazy_attribute
+    def widget_options(self):
         """
         Return an initial fresh dictionnary.
         """

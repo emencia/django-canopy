@@ -52,7 +52,7 @@ class ControllerBaseForm:
         """
         return {
             name: self.cleaned_data.get(parameters["name"], None)
-            for name, parameters in self.controller.fields_definitions.items()
+            for name, parameters in self.controller.fields_schemes.items()
         }
 
     def save(self, *args, commit=True, **kwargs):

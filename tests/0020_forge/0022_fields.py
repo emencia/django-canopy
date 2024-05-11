@@ -22,7 +22,8 @@ def test_get_form_fields(settings):
                 "position": 1,
                 "help_text": "Helping",
                 "initial": "Lorem ipsum",
-                "options": {},
+                "field_options": {},
+                "widget_options": {},
             },
         }
     )
