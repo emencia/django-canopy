@@ -59,6 +59,31 @@ class FormClassForge:
 
         return scheme
 
+    def build_slot_widget(self, definition, slot):
+        """
+        Build field widget for given slot and definition.
+
+        Arguments:
+            definition (dict):
+            slot (dict):
+
+        Returns:
+            django.forms.Field:
+        """
+        klass = definition.get("class", None)
+        attrs = copy.deepcopy(definition.get("options", {}))
+        slot_options = slot.get("widget_options", {})
+
+        if not klass:
+            return None
+
+        if not attrs:
+            widget = klass
+        else:
+            widget = klass(attrs=attrs)
+
+        return widget
+
     def build_slot_field(self, definitions, slot):
         """
         Build field for given slot.
@@ -70,14 +95,18 @@ class FormClassForge:
         Returns:
             django.forms.Field:
         """
+        if slot["kind"] not in definitions:
+            msg = _("Slot definition does not exists for given name: {}")
+            raise ControllerError(msg.format(slot["kind"]))
+
+        slot_definition = definitions[slot["kind"]]
+
         # Get the field definition
-        field_definition = definitions[slot["kind"]]["field"]
+        field_definition = slot_definition["field"]
         field_kwargs = copy.deepcopy(field_definition.get("options", {}))
 
-        # Get the widget definition
-        widget_definition = definitions[slot["kind"]].get("widget", {})
-        widget_class = widget_definition.get("class", None)
-        widget_attrs = copy.deepcopy(widget_definition.get("options", {}))
+        # Get the slot field options values
+        slot_field_options = slot["field_options"]
 
         # Then update field options with slot object values
         field_kwargs.update({
@@ -87,16 +116,9 @@ class FormClassForge:
             "required": slot["required"],
         })
 
-        # extra_field_options = slot["field_options"]
-        # extra_widget_options = slot["widget_options"]
-
-        # Append possible widget with optional if any
-        if widget_class:
-            if not widget_attrs:
-                widget = widget_class
-            else:
-                widget = widget_class(attrs=widget_attrs)
-
+        # Append possible widget with options if any
+        widget = self.build_slot_widget(slot_definition.get("widget", {}), slot)
+        if widget:
             field_kwargs["widget"] = widget
 
         # Initialize and register field with its options
@@ -113,18 +135,10 @@ class FormClassForge:
         Returns:
             dict:
         """
-        fields = {}
-
-        # Build field for each slot
-        for name, slot in scheme.items():
-            if slot["kind"] not in definitions:
-                msg = _("Slot definition does not exists for given name: {}")
-                raise ControllerError(msg.format(slot["kind"]))
-
-            # Initialize and register field with its options
-            fields[name] = self.build_slot_field(definitions, slot)
-
-        return fields
+        return {
+            name: self.build_slot_field(definitions, slot)
+            for name, slot in scheme.items()
+        }
 
     def get_form(self, scheme, klass=None, extra_attrs={}, definitions=None):
         """

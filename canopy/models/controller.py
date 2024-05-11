@@ -59,14 +59,18 @@ class Controller(models.Model):
     def __str__(self):
         return self.title
 
+    def get_absolute_url(self):
+        """
+        Return absolute URL to the category detail view.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("canopy:controller-form", kwargs={"slug": self.slug})
+
     def slot_schemes(self, queryset=None):
         """
-        Returns all controller slot definitions.
-
-        .. Note::
-            Since hee we use ``Queryset.values()`` to get slots, the options value will
-            be the plain string for the JSON data. You will need to decode (like
-            with ``json.loads``) yourself if needed.
+        Returns all controller slot objects values.
 
         Keyword Arguments:
             queryset (Queryset): A custom queryset to use instead of the default one
@@ -103,15 +107,6 @@ class Controller(models.Model):
             dict: Slot definitions.
         """
         return self.slot_schemes()
-
-    def get_absolute_url(self):
-        """
-        Return absolute URL to the category detail view.
-
-        Returns:
-            string: An URL.
-        """
-        return reverse("canopy:controller-form", kwargs={"slug": self.slug})
 
     def save(self, *args, **kwargs):
         # Auto update 'last_update' value on each save
