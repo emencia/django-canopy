@@ -63,6 +63,8 @@ class Controller(models.Model):
         """
         Returns all controller slot definitions.
 
+        TODO: Rename to "slot_definitions"
+
         .. Note::
             Since hee we use ``Queryset.values()`` to get slots, the options value will
             be the plain string for the JSON data. You will need to decode (like
@@ -92,7 +94,7 @@ class Controller(models.Model):
         }
 
     @cached_property
-    def fields_scheme(self):
+    def fields_definitions(self):
         """
         Returns the field slot definitions.
 

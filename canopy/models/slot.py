@@ -93,6 +93,9 @@ class Slot(models.Model):
     options = models.JSONField(blank=True, default=empty_fresh_dictionnary)
     """
     Optional JSON value to hold input and widget extra options.
+
+    TODO: Finally, it may be better to have distincs options attribute for field and
+    widget.
     """
 
     class Meta:
