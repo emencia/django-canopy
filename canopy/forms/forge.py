@@ -72,6 +72,7 @@ class FormClassForge:
         """
         klass = definition.get("class", None)
         attrs = copy.deepcopy(definition.get("options", {}))
+        # TODO: Not applied yet
         slot_options = slot.get("widget_options", {})
 
         if not klass:
@@ -80,6 +81,7 @@ class FormClassForge:
         if not attrs:
             widget = klass
         else:
+            attrs.update(slot_options)
             widget = klass(attrs=attrs)
 
         return widget
@@ -106,6 +108,7 @@ class FormClassForge:
         field_kwargs = copy.deepcopy(field_definition.get("options", {}))
 
         # Get the slot field options values
+        # TODO: Not applied yet
         slot_field_options = slot["field_options"]
 
         # Then update field options with slot object values

@@ -5,14 +5,31 @@ Slot definitions
 The base definitions is used as available slot kinds and by the forge to build fields
 for given slots.
 
-A definition includes field parameters and possibly also widget parameters.
+A definition includes field parameters, widget parameters and a validation schema for
+field and widget.
 
 Slot field and widget are defined directly as classes but never as object instances
 since the form forge will instanciate them itself and apply options.
 
+Validation schemas are implemented with the Python library ``schema`` and are used
+to validate the JSON content in field and widget options.
+
+.. Todo::
+    Definitions needs to be validated, either automatically from Django system check
+    or a commandline, or whatever.
+
+    * All definition must have a "name" and "field" items.
+    * Field item must have a "class" item;
+    * If widget item exists, it must include a "class" item;
+    * If field or widget have an "options" item it must be followed with a "schema"
+      item non-empty or identical to the options structure (if options have max_length,
+      schema must have it too, and schema must not have item for undefined options;
+
 """
 from django import forms
 from django.utils.translation import gettext_lazy as _
+
+from schema import And, Or, Optional
 
 
 BASE_DEFINITIONS = {
@@ -20,14 +37,18 @@ BASE_DEFINITIONS = {
         "name": _("Boolean"),
         "field": {
             "class": forms.BooleanField,
-            "options": {},
         },
     },
     "email": {
         "name": _("Email"),
         "field": {
             "class": forms.EmailField,
-            "options": {},
+            "options": {
+                "max_length": None,
+            },
+            "schema": {
+                Optional("max_length"): And(int, lambda n: n > 0),
+            },
         },
     },
     # Date format would need to be set, here formatted for the default language.
@@ -37,7 +58,6 @@ BASE_DEFINITIONS = {
         "name": _("Date"),
         "field": {
             "class": forms.DateField,
-            "options": {},
         },
     },
     "text-simple": {
@@ -59,7 +79,6 @@ BASE_DEFINITIONS = {
         },
         "widget": {
             "class": forms.Textarea,
-            "options": {},
         },
     },
 }

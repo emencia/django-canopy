@@ -149,6 +149,7 @@ class Slot(models.Model):
                 "name": _("Slot name can not be a reserved Controller keyword."),
             })
 
+        # TODO: Field and widget option JSONs are to be validated with schema
         if not isinstance(self.field_options, dict):
             raise ValidationError({
                 "field_options": _(

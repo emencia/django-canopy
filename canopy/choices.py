@@ -10,12 +10,13 @@ You can not add, edit or remove entries just like that or it may result to data 
 Migration that include fields that use these choices will need to be rewritten to use
 these getters instead of Django hardcoded choice list and default.
 """
-from .slot_definitions import BASE_DEFINITIONS
+from django.conf import settings
+from django.utils.module_loading import import_string
 
 
 CANOPY_SLOT_KIND_CHOICES = [
     (k, v["name"])
-    for k, v in BASE_DEFINITIONS.items()
+    for k, v in import_string(settings.CANOPY_SLOT_DEFINITIONS).items()
 ]
 
 

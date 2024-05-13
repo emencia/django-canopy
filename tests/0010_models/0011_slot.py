@@ -4,6 +4,8 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.db import transaction
 
+from schema import And, Or, Optional
+
 from canopy.factories import ControllerFactory, SlotFactory
 from canopy.models import empty_fresh_dictionnary, Slot
 
@@ -117,37 +119,6 @@ def test_name_validation(db, name, message):
     assert excinfo.value.message_dict == {"name": [message]}
 
 
-@pytest.mark.parametrize("value", [
-    "{}",
-    [],
-])
-def test_options_validation(db, value):
-    """
-    Invalid field or widget options value should raise a validation error from model.
-    """
-    slot = SlotFactory(field_options=value)
-
-    with pytest.raises(ValidationError) as excinfo:
-        slot.full_clean()
-
-    assert excinfo.value.message_dict == {
-        "field_options": [
-            "Slot field options must be a dictionnary."
-        ]
-    }
-
-    slot = SlotFactory(widget_options=value)
-
-    with pytest.raises(ValidationError) as excinfo:
-        slot.full_clean()
-
-    assert excinfo.value.message_dict == {
-        "widget_options": [
-            "Slot widget options must be a dictionnary."
-        ]
-    }
-
-
 def test_options_json(db):
     """
     Demonstrate JSONfield basic behaviors.
@@ -184,3 +155,47 @@ def test_options_json(db):
     assert slot.field_options["plip"] == "plop"
     # There is not magic attribute getter on the JSON value
     assert hasattr(slot.field_options, "plip") is False
+
+
+@pytest.mark.parametrize("value", [
+    "{}",
+    [],
+])
+def test_field_options_validation(db, value):
+    """
+    Invalid field options value should raise a validation error from model.
+
+    This process schema validation.
+    """
+    slot = SlotFactory(field_options=value)
+
+    with pytest.raises(ValidationError) as excinfo:
+        slot.full_clean()
+
+    assert excinfo.value.message_dict == {
+        "field_options": [
+            "Slot field options must be a dictionnary."
+        ]
+    }
+
+
+@pytest.mark.parametrize("value", [
+    "{}",
+    [],
+])
+def test_widget_options_validation(db, value):
+    """
+    Invalid widget options value should raise a validation error from model.
+
+    This process schema validation.
+    """
+    slot = SlotFactory(widget_options=value)
+
+    with pytest.raises(ValidationError) as excinfo:
+        slot.full_clean()
+
+    assert excinfo.value.message_dict == {
+        "widget_options": [
+            "Slot widget options must be a dictionnary."
+        ]
+    }
