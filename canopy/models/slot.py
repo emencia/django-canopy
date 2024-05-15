@@ -1,8 +1,13 @@
 from keyword import iskeyword
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.utils.module_loading import import_string
+
+from schema import Schema, SchemaError
+from schema import And, Or, Optional
 
 from ..choices import get_kind_choices, get_kind_default
 
@@ -13,12 +18,22 @@ FORBIDDEN_SLOT_NAMES = ("controller", "save")
 
 
 def empty_fresh_dictionnary():
+    """
+    A shortand to return a simple empty dictionnary ensured to not be shared and avoid
+    mutation between definitions.
+    """
     return {}
+
+
+SLOT_DEFINITIONS = import_string(settings.CANOPY_SLOT_DEFINITIONS)
 
 
 class Slot(models.Model):
     """
     Slot defines a field for a Controller, generally a form input.
+
+    TODO: On save, if old kind is different than new kind, field and widget options are
+    to be reset.
     """
     controller = models.ForeignKey(
         "canopy.controller",
@@ -33,6 +48,10 @@ class Slot(models.Model):
         max_length=50,
         choices=get_kind_choices(),
         default=get_kind_default(),
+        help_text=_(
+            "If you change this after initial save, all field and widget options "
+            "will be lost."
+        ),
     )
     """
     Required slot kind string. Determine the kind of slot.
@@ -116,8 +135,15 @@ class Slot(models.Model):
         return self.label
 
     def clean_fields(self, exclude=None):
+        super().clean_fields(exclude=exclude)
+
+        self.clean_name()
+        self.clean_field_options()
+        self.clean_widget_options()
+
+    def clean_name(self):
         """
-        Apply custom validation on field, especially for the ``name`` value.
+        Apply validation for the ``name`` value.
 
         TODO:
         Current name field value validation is possibly not enough, a name can
@@ -127,8 +153,6 @@ class Slot(models.Model):
         By the way, the documentation should have a dedicated part to list all the
         rules for slot name in a comprehensive way so it can be used for users.
         """
-        super().clean_fields(exclude=exclude)
-
         if self.name.startswith("_"):
             raise ValidationError({
                 "name": _("Slot name can not start with underscore character."),
@@ -149,7 +173,8 @@ class Slot(models.Model):
                 "name": _("Slot name can not be a reserved Controller keyword."),
             })
 
-        # TODO: Field and widget option JSONs are to be validated with schema
+    def clean_field_options(self):
+        # TODO: Delegate this to Schema if its error msg is not very comprehensive ?
         if not isinstance(self.field_options, dict):
             raise ValidationError({
                 "field_options": _(
@@ -157,6 +182,28 @@ class Slot(models.Model):
                 ),
             })
 
+        #
+        field_definition = SLOT_DEFINITIONS[self.kind]
+
+        # TODO:
+        # * This is working but we need to get ride of temporary hardcoded schema;
+        # *
+        try:
+            Schema(
+                {
+                    Optional("max_length"): And(int, lambda n: n > 0),
+                }
+            ).validate(self.field_options)
+        except SchemaError as e:
+            raise ValidationError({
+                "field_options": " ".join([
+                    item
+                    for item in e.autos
+                    if item not in ("None", None)
+                ]),
+            })
+
+    def clean_widget_options(self):
         if not isinstance(self.widget_options, dict):
             raise ValidationError({
                 "widget_options": _(

@@ -161,7 +161,10 @@ class FormClassForge:
                 field attributes with the same name. A naming policy should be
                 enforced.
             definitions (dict): Definitions to use instead of the default ones. This
-                is not cumulative, it replaces the whole default definitions.
+                is not cumulative, it replaces the whole default definitions. Be aware
+                that is mostly for testing usage since canopy is not really intended to
+                work with definitions that does not come from module defined in
+                ``settings.CANOPY_SLOT_DEFINITIONS``.
 
         Returns:
             class: The form class built from given slot scheme.

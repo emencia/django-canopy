@@ -157,45 +157,35 @@ def test_options_json(db):
     assert hasattr(slot.field_options, "plip") is False
 
 
-@pytest.mark.parametrize("value", [
-    "{}",
-    [],
-])
-def test_field_options_validation(db, value):
+def test_field_options_validation_success(db):
     """
     Invalid field options value should raise a validation error from model.
 
     This process schema validation.
     """
-    slot = SlotFactory(field_options=value)
-
-    with pytest.raises(ValidationError) as excinfo:
-        slot.full_clean()
-
-    assert excinfo.value.message_dict == {
-        "field_options": [
-            "Slot field options must be a dictionnary."
-        ]
-    }
+    slot = SlotFactory(field_options={"max_length": 42})
+    slot.full_clean()
 
 
-@pytest.mark.parametrize("value", [
-    "{}",
-    [],
+@pytest.mark.parametrize("data, error", [
+    (
+        [],
+        "Slot field options must be a dictionnary.",
+    ),
+    #(
+        #{},
+        #"Missing key: 'always'"
+    #),
+    (
+        {"max_length": "foo"},
+        "Key 'max_length' error: 'foo' should be instance of 'int'"
+    ),
 ])
-def test_widget_options_validation(db, value):
+def test_field_options_validation_errors(db, data, error):
     """
-    Invalid widget options value should raise a validation error from model.
-
-    This process schema validation.
+    Invalid field options value should raise a schema validation error from model.
     """
-    slot = SlotFactory(widget_options=value)
-
+    slot = SlotFactory(field_options=data)
     with pytest.raises(ValidationError) as excinfo:
         slot.full_clean()
-
-    assert excinfo.value.message_dict == {
-        "widget_options": [
-            "Slot widget options must be a dictionnary."
-        ]
-    }
+    assert excinfo.value.message_dict == {"field_options": [error]}

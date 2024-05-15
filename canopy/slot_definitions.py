@@ -25,6 +25,9 @@ to validate the JSON content in field and widget options.
       item non-empty or identical to the options structure (if options have max_length,
       schema must have it too, and schema must not have item for undefined options;
 
+TODO: Hold on !
+https://github.com/emencia/django-canopy/issues/5#issuecomment-2109766420
+
 """
 from django import forms
 from django.utils.translation import gettext_lazy as _
@@ -67,6 +70,9 @@ BASE_DEFINITIONS = {
             "options": {
                 "max_length": 255,
             },
+            "schema": {
+                Optional("max_length"): And(int, lambda n: n > 0),
+            }
         },
     },
     "text-multiline": {
