@@ -1,8 +1,6 @@
 import copy
 
 from django import forms
-from django.conf import settings
-from django.utils.module_loading import import_string
 from django.utils.translation import gettext_lazy as _
 
 from ..exceptions import ControllerError
@@ -10,33 +8,18 @@ from ..models import Controller
 from .controller import ControllerBaseForm
 
 
+from canopy.definitions.registry import get_registry
+registry = get_registry()
+
+
 class FormClassForge:
     """
     Forge to build a form from given definitions and slots.
+
+    TODO: Use registry instead of manually loading definitions.
     """
     def __init__(self, default_klass=None):
         self.default_klass = default_klass or ControllerBaseForm
-
-    def get_definitions(self, definitions=None):
-        """
-        Returns available slot definitions.
-
-        On default if no definitions are given the default ones from
-        ``settings.CANOPY_SLOT_DEFINITIONS`` are used.
-
-        Keyword Arguments:
-            definitions (dict or string): Definitions to use instead of the default
-                ones. This is not cumulative, it replaces the whole default definitions.
-                This can be either the definitions dictionnary or a string for a
-                module Python path to load.
-
-        Returns:
-            dict:
-        """
-        if isinstance(definitions, dict):
-            return definitions
-
-        return import_string(definitions or settings.CANOPY_SLOT_DEFINITIONS)
 
     def get_slot_scheme(self, scheme):
         """
@@ -62,6 +45,8 @@ class FormClassForge:
     def build_slot_widget(self, definition, slot):
         """
         Build field widget for given slot and definition.
+
+        TODO: Shouldn't this done (fully or partially) with registry instead ?
 
         Arguments:
             definition (dict):
@@ -90,6 +75,8 @@ class FormClassForge:
         """
         Build field for given slot.
 
+        TODO: Shouldn't this done (fully or partially) with registry instead ?
+
         Arguments:
             definitions (dict):
             slot (dict):
@@ -109,7 +96,7 @@ class FormClassForge:
 
         # Get the slot field options values
         # TODO: Not applied yet
-        slot_field_options = slot["field_options"]
+        # slot_field_options = slot["field_options"]
 
         # Then update field options with slot object values
         field_kwargs.update({
@@ -170,7 +157,9 @@ class FormClassForge:
             class: The form class built from given slot scheme.
         """
         self.klass = klass or self.default_klass
-        definitions = self.get_definitions(definitions)
+        definitions = (
+            definitions if isinstance(definitions, dict) else registry.get_all()
+        )
 
         scheme = self.get_slot_scheme(scheme)
 

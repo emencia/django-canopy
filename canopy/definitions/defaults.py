@@ -5,37 +5,18 @@ Slot definitions
 The base definitions is used as available slot kinds and by the forge to build fields
 for given slots.
 
-A definition includes field parameters, widget parameters and a validation schema for
-field and widget.
+A definition includes field options parameters and widget options parameters. Option
+parameter contains form fields to represent it in Controler form and form fields to
+edit it in Slot form.
 
 Slot field and widget are defined directly as classes but never as object instances
 since the form forge will instanciate them itself and apply options.
-
-Validation schemas are implemented with the Python library ``schema`` and are used
-to validate the JSON content in field and widget options.
-
-.. Todo::
-    Definitions needs to be validated, either automatically from Django system check
-    or a commandline, or whatever.
-
-    * All definition must have a "name" and "field" items.
-    * Field item must have a "class" item;
-    * If widget item exists, it must include a "class" item;
-    * If field or widget have an "options" item it must be followed with a "schema"
-      item non-empty or identical to the options structure (if options have max_length,
-      schema must have it too, and schema must not have item for undefined options;
-
-TODO: Hold on !
-https://github.com/emencia/django-canopy/issues/5#issuecomment-2109766420
-
 """
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
-from schema import And, Or, Optional
 
-
-BASE_DEFINITIONS = {
+DEFINITIONS = {
     "boolean": {
         "name": _("Boolean"),
         "field": {
@@ -49,8 +30,13 @@ BASE_DEFINITIONS = {
             "options": {
                 "max_length": None,
             },
-            "schema": {
-                Optional("max_length"): And(int, lambda n: n > 0),
+            # The virtual fields to use for option values edition in Slot admin
+            "options_fields": {
+                "max_length": forms.IntegerField(
+                    min_value=1,
+                    max_value=255,
+                    required=False
+                ),
             },
         },
     },
@@ -70,9 +56,17 @@ BASE_DEFINITIONS = {
             "options": {
                 "max_length": 255,
             },
-            "schema": {
-                Optional("max_length"): And(int, lambda n: n > 0),
-            }
+            # The virtual fields to use for option values edition in Slot admin
+            # TODO: This should be checked or validated to ensure field names does not
+            # override any real Slot fields
+            "options_fields": {
+                "max_length": forms.IntegerField(
+                    min_value=1,
+                    max_value=255,
+                    required=False
+                ),
+                "strip": forms.BooleanField(required=False),
+            },
         },
     },
     "text-multiline": {
@@ -82,9 +76,14 @@ BASE_DEFINITIONS = {
             "options": {
                 "max_length": 3000,
             },
+            "options_fields": {},
         },
         "widget": {
             "class": forms.Textarea,
+            # NOTE: Pay attention that field and widget options are merged
+            # Using the same field name for both field and widget options will make
+            # conflict leading to widget options overriding the field options
+            "options_fields": {},
         },
     },
 }

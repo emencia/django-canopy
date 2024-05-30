@@ -19,3 +19,6 @@ TEST_PAGE_TEMPLATES = "pages/test.html"
 CMS_TEMPLATES.append(  # noqa: F405
     (TEST_PAGE_TEMPLATES, "test-basic"),
 )
+
+# Use dedicated definitions for test environment
+CANOPY_SLOT_DEFINITIONS = "canopy.definitions.tests"

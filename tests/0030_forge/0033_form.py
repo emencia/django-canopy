@@ -1,7 +1,5 @@
-from django import forms
-
 from canopy.forms.forge import FormClassForge
-from canopy.factories import ControllerFactory, SlotFactory
+from canopy.factories import ControllerFactory
 from canopy.utils.tests import html_pyquery
 
 

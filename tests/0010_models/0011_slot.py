@@ -4,8 +4,6 @@ from django.core.exceptions import ValidationError
 from django.db.utils import IntegrityError
 from django.db import transaction
 
-from schema import And, Or, Optional
-
 from canopy.factories import ControllerFactory, SlotFactory
 from canopy.models import empty_fresh_dictionnary, Slot
 
@@ -167,15 +165,36 @@ def test_field_options_validation_success(db):
     slot.full_clean()
 
 
+def test_option_fields(db):
+    """
+    Slot models has methods to easily get the options fields for slot field or widget.
+    """
+    default_def = Slot._get_definition()
+    assert isinstance(default_def, dict) is True
+
+    controller = ControllerFactory()
+
+    slot = Slot(
+        controller=controller,
+        label="name",
+        name="Name",
+        kind="text-simple",
+    )
+    slot.full_clean()
+    slot.save()
+
+    field_fields = slot.options_fields("field")
+    assert "max_length" in field_fields
+    assert "strip" in field_fields
+    assert slot.options_fields("widget") == {}
+
+
+@pytest.mark.skip("Deprecated")
 @pytest.mark.parametrize("data, error", [
     (
         [],
         "Slot field options must be a dictionnary.",
     ),
-    #(
-        #{},
-        #"Missing key: 'always'"
-    #),
     (
         {"max_length": "foo"},
         "Key 'max_length' error: 'foo' should be instance of 'int'"
@@ -184,6 +203,9 @@ def test_field_options_validation_success(db):
 def test_field_options_validation_errors(db, data, error):
     """
     Invalid field options value should raise a schema validation error from model.
+
+    DEPRECATED: Schema library usage has been dropped in profit of ongoing definition
+    registry.
     """
     slot = SlotFactory(field_options=data)
     with pytest.raises(ValidationError) as excinfo:
