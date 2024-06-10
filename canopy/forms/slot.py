@@ -16,6 +16,9 @@ class SlotAdminForm(forms.ModelForm):
     * There is currently no clean method since options fields are naturally validated;
 
     """
+    class Meta:
+        model = Slot
+        fields = "__all__"
 
     def __init__(self, *args, **kwargs):
         field_options_formclass = build_options_form(
@@ -43,6 +46,20 @@ class SlotAdminForm(forms.ModelForm):
         # self.fields["field_options"].widget = forms.HiddenInput()
         # self.fields["widget_options"].widget = forms.HiddenInput()
 
-    class Meta:
-        model = Slot
-        fields = "__all__"
+    def clean(self):
+        """
+        Here we can alter data before save.
+
+        Options values exists in cleaned_data at the same level than other Slot fields
+        since we push them as slot form fields, not in field_options/widget_options.
+
+        So here we could use registry to retrieve every option fields and dispatch them
+        correctly in field_options/widget_options JSON.
+        """
+        cleaned_data = super().clean()
+
+        if self.instance.id and "kind" in self.changed_data:
+            cleaned_data["field_options"] = {}
+            cleaned_data["widget_options"] = {}
+
+        return cleaned_data

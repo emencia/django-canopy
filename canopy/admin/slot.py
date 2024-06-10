@@ -32,11 +32,13 @@ class SlotAdmin(admin.ModelAdmin):
             if obj
             else Slot._default_options_fields("field")
         )
+
         # widget_options_fields = (
         #     obj.options_fields("widget")
         #     if obj
         #     else Slot._default_options_fields("widget")
         # )
+
         # We should merge 'widget_options_fields' also
         self.form.declared_fields = {} if not obj else field_options_fields
 
@@ -47,12 +49,11 @@ class SlotAdmin(admin.ModelAdmin):
         Hook for specifying fieldsets.
         """
         items = super().get_fieldsets(request, obj=obj)
-        print("🤡 fieldset items:", items)
         return items
 
     def get_readonly_fields(self, request, obj=None):
         """
         Originally field_options and widget_options should be hidden but during
-        development we want to see what they hold
+        development we want to see what they are holding
         """
         return self.readonly_fields + ("field_options", "widget_options")

@@ -35,7 +35,7 @@ class SlotDefinitionsRegistry:
         """
         Shortcut method to boot/reset registry.
         """
-        self.default = None
+        self.default_kind = None
         self.definitions = {}
 
     def check_definitions(self, definitions):
@@ -81,7 +81,8 @@ class SlotDefinitionsRegistry:
                         "{key}: 'field' is missing 'class' item.".format(key=key)
                     )
                 # TODO: Validate "options_fields" so option names could not override
-                # existing Slot attribute, especially its model fields.
+                # existing Slot attribute, especially its model fields (?? if it's for
+                # form it's useless as explained in ControllerBaseForm).
 
             # Definition widget is optional
             if "widget" in data:
@@ -90,6 +91,43 @@ class SlotDefinitionsRegistry:
                     errors.append(
                         "{key}: 'widget' is missing 'class' item.".format(key=key)
                     )
+
+        if errors:
+            raise DefinitionRegistryError(error_messages=errors)
+
+        return True
+
+    def check_default(self, value):
+        """
+        Check given default definition key name.
+
+        * Default value must be a string;
+        * Default value must be an available key name from loaded definitions;
+
+        Arguments:
+            definitions (string): Value to validate as a default definition key name.
+
+        Raises:
+            DefinitionRegistryError: In case of invalid value, this exceptions is
+            raised. Note that it will regroup all items errors but the exception
+            message is just a basic error message. To retrieve detail errors you will
+            need to use the exception method ``.get_payload_details()``.
+
+        Returns:
+            bool: True if given default key name is valid.
+        """
+        errors = []
+
+        # Definition value must be a dict
+        if not isinstance(value, str):
+            msg = "Default value must be a string, not {}."
+            errors.append(msg.format(type(value)))
+        elif value not in self.definitions:
+            msg = (
+                "Default value must be an available key from definitions, '{}' does "
+                "not exist in definitions."
+            )
+            errors.append(msg.format(value))
 
         if errors:
             raise DefinitionRegistryError(error_messages=errors)
@@ -106,30 +144,45 @@ class SlotDefinitionsRegistry:
 
         Arguments:
             definitions (dict or string): Either a dict of definitions to append or
-                a string for a Python path to module to load to get definitions to
-                append.
+                a string for a Python path to module to import to get definitions to
+                append. Definitions are expected to be in a ``DEFINITIONS`` variable
+                from the import module.
 
         Keyword Arguments:
-            default (string): yet to come. May be not accurate as a kwarg, maybe get it
-                from import if available, else need to use set_default()
-
+            default (string): Set value as default if it is a string. Else if value
+                is empty this will try to get it from imported definitions module if
+                any, the default value is expected in ``DEFAULT`` variable from the
+                imported module.
         """
-        # TODO: Not fully implement yet, still need to be validated then set and used
-        if default is None:
-            try:
-                default = import_string(
-                    settings.CANOPY_SLOT_DEFINITIONS + ".DEFAULT"
-                )
-            except ImportError:
-                default = None
+        imported_modulepath = None
 
+        # Either try to import Python module path to import from given definitions
+        # value if it is a string else assume it is the definitions dict itself
         if isinstance(definitions, str):
             defs = import_string(definitions + ".DEFINITIONS")
+            imported_modulepath = definitions
         elif isinstance(definitions, dict):
             defs = definitions
 
         if self.check_definitions(defs):
             self.definitions.update(defs)
+
+        if default is None and imported_modulepath:
+            try:
+                default = import_string(imported_modulepath + ".DEFAULT")
+            except ImportError:
+                default = None
+
+        self.set_default(default)
+
+    def set_default(self, value):
+        """
+        Set a new default definition key name.
+
+        Given value will be validated before to be set.
+        """
+        if value and self.check_default(value):
+            self.default_kind = value
 
     def names(self):
         """
@@ -201,18 +254,11 @@ class SlotDefinitionsRegistry:
         """
         Get default definition key name.
 
-        The default definition is the first one from definitions.
-
-        NOTE: We may have possibility to define a specific default from a variable
-        along '.set_default()' method. However it will need to restructure how we load
-        definitions, the module path won't target anymore 'DEFINITIONS' var but only
-        the module containing it and so we could seek also for an optional "DEFAULT"
-        variable.
-
         Returns:
-            name:
+            string: The default definition name is either the defined default (from
+            loading) or the first one from definitions if there is no default.
         """
-        return list(self.definitions.keys())[0]
+        return self.default_kind or list(self.definitions.keys())[0]
 
     def get_kind_definition(self, kind=None):
         """
@@ -220,17 +266,19 @@ class SlotDefinitionsRegistry:
 
         Keyword Arguments:
             kind (string or Slot): the kind key name or Slot instance to search for
-                definition. On default this is the default kind choice key.
+                definition. If this argument is an empty value, the default kind choice
+                key will be used if available.
 
         Returns:
             dict: Kind definition. This is a copy of the registred definition to avoid
             registry mutations. Return can be None if no kind has been given and there
-            is not defined default definition name.
+            is no defined default definition name.
         """
+        # Use default kind if argument is an empty value
         kind = kind or self.get_default()
 
         # If kind is model instance with "kind" attribute get the kind name from it
-        if isinstance(kind, models.Model) and hasattr(self, "kind"):
+        if isinstance(kind, models.Model) and hasattr(kind, "kind"):
             kind = kind.kind
 
         return copy.deepcopy(self.get(kind))
@@ -268,3 +316,9 @@ class SlotDefinitionsRegistry:
         """
         kind = self.get_kind_definition(kind=kind)
         return kind["field"].get("options", {})
+
+    def validate_field_options(self, attrname, kind, values):
+        """
+        TODO: Field options values should be validated here
+        """
+        return True

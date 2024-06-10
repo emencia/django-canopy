@@ -25,8 +25,8 @@ class Slot(models.Model):
     """
     Slot defines a field for a Controller, generally a form input.
 
-    TODO: On save, if old kind is different than new kind, field and widget options
-    value is to be reset.
+    NOTE: Documentation should have a dedicated part to list all the
+    rules for slot name in a comprehensive way so it can be used for users.
     """
     controller = models.ForeignKey(
         "canopy.controller",
@@ -127,21 +127,6 @@ class Slot(models.Model):
     def __str__(self):
         return self.label
 
-    @classmethod
-    def _get_definition(cls, kind=None):
-        """
-        DEPRECATED: Replaced by 'registry.get_kind_definition' that should be used
-        directly instead of this method.
-        """
-        return registry.get_kind_definition(kind)
-
-    def options_fields(self, attrname):
-        """
-        DEPRECATED: Replaced by 'registry.get_kind_field_options' that should be used
-        directly instead of this method.
-        """
-        return registry.get_kind_field_options(attrname, kind=self.kind)
-
     def clean_fields(self, exclude=None):
         super().clean_fields(exclude=exclude)
 
@@ -153,13 +138,10 @@ class Slot(models.Model):
         """
         Apply validation for the ``name`` value.
 
-        TODO:
-        Current name field value validation is possibly not enough, a name can
-        actually be something from ``forms.Form``. We could use dir() on 'forms.Form'
-        and reserve everything that does not start with '_'.
-
-        By the way, the documentation should have a dedicated part to list all the
-        rules for slot name in a comprehensive way so it can be used for users.
+        .. Note::
+            We don't need to validate conflict between field names and ``forms.Form``
+            attributes since field are not set as attribute in final form class see
+            ``django.forms.DeclarativeFieldsMetaclass.__new__()`` for details.
         """
         if self.name.startswith("_"):
             raise ValidationError({
@@ -183,7 +165,8 @@ class Slot(models.Model):
 
     def clean_field_options(self):
         """
-        DEPRECATED: Possibly deprecated in favor of option form fields
+        NOTE: Registry would have to validate options values against kind definition
+        fields options
         """
         if not isinstance(self.field_options, dict):
             raise ValidationError({
@@ -193,6 +176,10 @@ class Slot(models.Model):
             })
 
     def clean_widget_options(self):
+        """
+        NOTE: Registry would have to validate options values against kind definition
+        widgets options
+        """
         if not isinstance(self.widget_options, dict):
             raise ValidationError({
                 "widget_options": _(

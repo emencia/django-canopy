@@ -75,7 +75,7 @@ class FormClassForge:
         """
         Build field for given slot.
 
-        TODO: Shouldn't this done (fully or partially) with registry instead ?
+        TODO: Shouldn't this be done (fully or partially) with registry instead ?
 
         Arguments:
             definitions (dict):

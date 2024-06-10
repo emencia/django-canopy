@@ -4,6 +4,7 @@ from django import forms
 
 from canopy.definitions import SlotDefinitionsRegistry
 from canopy.factories import ControllerFactory, SlotFactory
+from canopy.exceptions import DefinitionRegistryError
 
 
 def test_get_kind_definition(db):
@@ -34,6 +35,7 @@ def test_get_kind_definition(db):
             },
         },
     })
+
     assert registry.get_kind_definition()["name"] == "Boolean"
 
     assert registry.get_kind_definition("dummy")["name"] == "Dummy"
