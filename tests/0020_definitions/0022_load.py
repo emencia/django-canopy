@@ -1,26 +1,19 @@
-from django import forms
-
-from canopy.definitions import SlotDefinitionsRegistry
+from canopy.definitions import DefinitionsRegistry
+from canopy.definitions.kinds import BooleanKind
 
 
 def test_load_dict(settings):
     """
     Loading definitions from a dictionnary will properly fill registry.
     """
-    registry = SlotDefinitionsRegistry()
+    registry = DefinitionsRegistry()
 
     # It is ok to give an empty dict
-    registry.load({})
+    registry.load(())
     assert registry.definitions == {}
 
-    registry.load({
-        "boolean": {
-            "name": "Boolean",
-            "field": {
-                "class": forms.BooleanField,
-            },
-        },
-    })
+    registry.load((BooleanKind,))
+    assert registry.has("nope") is False
     assert registry.has("boolean") is True
 
     assert sorted(registry.names()) == ["boolean"]
@@ -30,7 +23,7 @@ def test_load_module():
     """
     Definitions can be loaded from a module when given as a Python path in a string.
     """
-    registry = SlotDefinitionsRegistry()
+    registry = DefinitionsRegistry()
 
     # It is ok to give an empty dict
     registry.load("canopy.definitions.tests")
@@ -44,16 +37,9 @@ def test_load_reset():
     """
     Registry can be reset so we can empty the definitions.
     """
-    registry = SlotDefinitionsRegistry()
+    registry = DefinitionsRegistry()
 
-    registry.load({
-        "boolean": {
-            "name": "Boolean",
-            "field": {
-                "class": forms.BooleanField,
-            },
-        },
-    })
+    registry.load((BooleanKind,))
     registry.reset()
 
     assert registry.definitions == {}

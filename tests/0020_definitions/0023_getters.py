@@ -1,6 +1,6 @@
 import pytest
 
-from canopy.definitions import SlotDefinitionsRegistry
+from canopy.definitions import DefinitionsRegistry
 from canopy.factories import ControllerFactory, SlotFactory
 from canopy.exceptions import DefinitionRegistryError
 
@@ -9,7 +9,7 @@ def test_definition_names():
     """
     'names' method should returns all available definition names.
     """
-    registry = SlotDefinitionsRegistry()
+    registry = DefinitionsRegistry()
     assert registry.names() == []
 
     registry.load("canopy.definitions.tests")
@@ -20,7 +20,7 @@ def test_has_kind_definition():
     """
     'has' method check if definition name exists in registry.
     """
-    registry = SlotDefinitionsRegistry()
+    registry = DefinitionsRegistry()
     registry.load("canopy.definitions.tests")
     assert registry.has("boolean") is True
     assert registry.has("nope") is False
@@ -31,12 +31,30 @@ def test_get_definition():
     'get' method should returns definition from its name, if it exists else a default
     value.
     """
-    registry = SlotDefinitionsRegistry()
+    registry = DefinitionsRegistry()
     registry.load("canopy.definitions.tests")
+
     assert registry.get("nope") is None
     assert registry.get("nope", "niet") == "niet"
     assert registry.get("nope", default="niet") == "niet"
-    assert registry.get("boolean")["name"] == "Boolean"
+    assert registry.get("boolean").name == "Boolean"
+
+
+def test_get_definition_from_controller(db):
+    """
+    'get_definition' method returns the definition for given kind.
+    """
+    registry = DefinitionsRegistry()
+    registry.load("canopy.definitions.tests")
+
+    # Without argument, the default definition is returned
+    default_def = registry.get_definition()
+    assert default_def.name == registry.get(registry.get_default()).name
+
+    controller = ControllerFactory()
+    slot = SlotFactory(controller=controller, kind="text-simple")
+    text_def = registry.get_definition(kind=slot)
+    assert text_def.name == "Simple text"
 
 
 def test_get_choices():
@@ -44,15 +62,15 @@ def test_get_choices():
     'get_choices' method should returns definition in the same format expected
     for  'choices' field attribute.
     """
-    registry = SlotDefinitionsRegistry()
+    registry = DefinitionsRegistry()
     assert registry.get_choices() == []
 
     registry.load("canopy.definitions.tests")
     assert registry.get_choices() == [
         ("boolean", "Boolean"),
-        ("text-simple", "Simple text"),
         ("email", "Email"),
-        ("textarea", "Textarea")
+        ("textarea", "Textarea"),
+        ("text-simple", "Simple text"),
     ]
 
 
@@ -61,7 +79,7 @@ def test_get_set_default():
     'get_default' method should returns the default definition. Also there is different
     way to define the default value.
     """
-    registry = SlotDefinitionsRegistry()
+    registry = DefinitionsRegistry()
 
     # Empty registry does not have any default kind
     with pytest.raises(IndexError):
@@ -86,28 +104,11 @@ def test_get_set_default():
         registry.set_default("nope")
 
 
-def test_get_kind_definition(db):
-    """
-    'get_kind_definition' method returns the definition for given kind.
-    """
-    registry = SlotDefinitionsRegistry()
-    registry.load("canopy.definitions.tests")
-
-    # Without argument, the default definition is returned
-    default_def = registry.get_kind_definition()
-    assert default_def["name"] == registry.get(registry.get_default())["name"]
-
-    controller = ControllerFactory()
-    slot = SlotFactory(controller=controller, kind="text-simple")
-    text_def = registry.get_kind_definition(kind=slot)
-    assert text_def["name"] == "Simple text"
-
-
 def test_get_kind_field_options(db):
     """
     'get_kind_field_options' method field or widget options for given kind
     """
-    registry = SlotDefinitionsRegistry()
+    registry = DefinitionsRegistry()
     registry.load("canopy.definitions.tests")
 
     controller = ControllerFactory()

@@ -1,13 +1,10 @@
-import copy
-
-from django.conf import settings
 from django.db import models
 from django.utils.module_loading import import_string
 
 from ..exceptions import DefinitionRegistryError
 
 
-class SlotDefinitionsRegistry:
+class DefinitionsRegistry:
     """
     Definition registry for slot kinds.
 
@@ -38,68 +35,6 @@ class SlotDefinitionsRegistry:
         self.default_kind = None
         self.definitions = {}
 
-    def check_definitions(self, definitions):
-        """
-        Check given definitions.
-
-        * All definition must have a "name" and "field" items.
-        * Field item must have a "class" item;
-        * If widget item exists, it must include a "class" item;
-
-        .. Note::
-            There is currently no validation against options.
-
-        Arguments:
-            definitions (dict): All definition items to validate.
-
-        Raises:
-            DefinitionRegistryError: In case of invalid items, this exceptions is
-            raised. Note that it will regroup all items errors but the exception
-            message is just a basic error message. To retrieve detail errors you will
-            need to use the exception method ``.get_payload_details()``.
-
-        Returns:
-            bool: True if all definitions are valid.
-        """
-        errors = []
-
-        for key, data in definitions.items():
-            # Definition value must be a dict
-            if not isinstance(data, dict):
-                msg = "{key}: value must be a dictionnary."
-                errors.append(msg.format(key=key))
-                continue
-
-            # Definition name is required
-            if "name" not in data:
-                errors.append("{key}: is missing 'name' item.".format(key=key))
-
-            # Definition field is required
-            if "field" not in data:
-                errors.append("{key}: is missing 'field' item.".format(key=key))
-            else:
-                # Definition field class is required (but not checked for its type)
-                if "class" not in data["field"]:
-                    errors.append(
-                        "{key}: 'field' is missing 'class' item.".format(key=key)
-                    )
-                # TODO: Validate "options_fields" so option names could not override
-                # existing Slot attribute, especially its model fields (?? if it's for
-                # form it's useless as explained in ControllerBaseForm).
-
-            # Definition widget is optional
-            if "widget" in data:
-                # Definition widget class is required (but not checked for its type)
-                if "class" not in data["widget"]:
-                    errors.append(
-                        "{key}: 'widget' is missing 'class' item.".format(key=key)
-                    )
-
-        if errors:
-            raise DefinitionRegistryError(error_messages=errors)
-
-        return True
-
     def check_default(self, value):
         """
         Check given default definition key name.
@@ -117,14 +52,14 @@ class SlotDefinitionsRegistry:
             need to use the exception method ``.get_payload_details()``.
 
         Returns:
-            bool: True if given default key name is valid.
+            boolean: True if given default key name is valid.
         """
         errors = []
 
         # Definition value must be a dict
         if not isinstance(value, str):
             msg = "Default value must be a string, not {}."
-            errors.append(msg.format(type(value)))
+            errors.append(msg.format(type(value).__name__))
         elif value not in self.definitions:
             msg = (
                 "Default value must be an available key from definitions, '{}' does "
@@ -139,7 +74,7 @@ class SlotDefinitionsRegistry:
 
     def set_default(self, value):
         """
-        Set a new default definition key name.
+        Set default definition key name.
 
         Given value will be validated before to be set.
         """
@@ -148,17 +83,17 @@ class SlotDefinitionsRegistry:
 
     def load(self, definitions, default=None):
         """
-        Load definitions from a module or a dictionnary.
+        Load definitions from a module or a list of ``Kind`` objects.
 
         Each call to load does not reset previously loaded definitions, it is
         cumulative. However subsequent loads can override previously loaded
         definitions.
 
         Arguments:
-            definitions (dict or string): Either a dict of definitions to append or
-                a string for a Python path to module to import to get definitions to
-                append. Definitions are expected to be in a ``DEFINITIONS`` variable
-                from the import module.
+            definitions (iterable or string): Either an iterable of definitions to
+                append or a string for a Python path to module to import to get
+                definitions to append. Definitions are expected to be in a
+                ``DEFINITIONS`` variable from the imported module.
 
         Keyword Arguments:
             default (string): Set value as default if it is a string. Else if value
@@ -173,12 +108,19 @@ class SlotDefinitionsRegistry:
         if isinstance(definitions, str):
             defs = import_string(definitions + ".DEFINITIONS")
             imported_modulepath = definitions
-        elif isinstance(definitions, dict):
+        elif isinstance(definitions, list) or isinstance(definitions, tuple):
             defs = definitions
+        else:
+            msg = (
+                "Definitions must be provided either as a list, a tuple or a string "
+                "(for a module Python path) not '{}'"
+            )
+            raise ValueError(msg.format(type(definitions).__name__))
 
-        if self.check_definitions(defs):
-            self.definitions.update(defs)
+        # Apply found definitions
+        self.definitions.update({item.identifier: item for item in defs})
 
+        # Update default kind key name if available in loaded definition module
         if default is None and imported_modulepath:
             try:
                 default = import_string(imported_modulepath + ".DEFAULT")
@@ -217,7 +159,7 @@ class SlotDefinitionsRegistry:
             altered further from your code else you will mutate its content during
             current Python session.
 
-            Prefer to use ``SlotDefinitionsRegistry.get_kind_definition(..)`` instead
+            Prefer to use ``SlotDefinitionsRegistry.get_definition(..)`` instead
             that is safe against mutations. If you are not able to do so, use
             ``copy.deepcopy()`` on returned definition.
 
@@ -236,34 +178,37 @@ class SlotDefinitionsRegistry:
 
     def get_all(self):
         """
-        Shortcut method to definitions attribute.
+        Shortcut method on ``definitions`` attribute.
+
+        Returns:
+            dict: All registered definitions.
         """
         return self.definitions
 
     def get_choices(self):
         """
-        Build kind choices from available definitions.
+        Build choices of available definitions.
 
         Returns:
             list: List of tuples for available definitions. Each tuple is pair of
             definition key and definition name.
         """
         return [
-            (k, v["name"])
+            (k, v.name)
             for k, v in self.definitions.items()
         ]
 
     def get_default(self):
         """
-        Get default definition key name.
+        Get the default definition key name from registry.
 
         Returns:
             string: The default definition name is either the defined default (from
             loading) or the first one from definitions if there is no default.
         """
-        return self.default_kind or list(self.definitions.keys())[0]
+        return self.default_kind or self.names()[0]
 
-    def get_kind_definition(self, kind=None):
+    def get_definition(self, kind=None):
         """
         Get a definition from a Slot object or a ``kind`` name.
 
@@ -284,11 +229,11 @@ class SlotDefinitionsRegistry:
         if isinstance(kind, models.Model) and hasattr(kind, "kind"):
             kind = kind.kind
 
-        return copy.deepcopy(self.get(kind))
+        return self.get(kind)
 
     def get_kind_field_options(self, attrname, kind=None):
         """
-        Get all options for field or widget according to a kind (given or default).
+        Get all options for the field or widget from a kind (given or default).
 
         Arguments:
             attrname (string): The Slot attribute name for the related option field
@@ -299,16 +244,19 @@ class SlotDefinitionsRegistry:
                 default this is the default kind choice key.
 
         Returns:
-            dict: Possible field options if any else an empty dict.
+            dict: Possible field attributes if any else an empty dict.
         """
-        kind = self.get_kind_definition(kind=kind)
-        return kind.get(attrname, {}).get("options_fields", {})
+        kind = self.get_definition(kind=kind)
+        if not getattr(kind, attrname):
+            return {}
 
-    def get_kind_field_options_initials(self, kind=None):
+        return getattr(kind, attrname).options
+
+    def get_kind_field_initials(self, kind=None):
         """
-        Get initial fields values for field options for given kind key or Slot.
+        Get all initial values for the field from a kind (given or default).
 
-        This is only about kind field since widget does not manage any value.
+        This is only about kind field since widget does not manage any initials.
 
         Keyword Arguments:
             kind (string or Slot): the Slot kind key to search for definition. On
@@ -317,11 +265,11 @@ class SlotDefinitionsRegistry:
         Returns:
             dict:
         """
-        kind = self.get_kind_definition(kind=kind)
-        return kind["field"].get("options", {})
+        kind = self.get_definition(kind=kind)
+        return kind.field.initials
 
     def validate_field_options(self, attrname, kind, values):
         """
-        TODO: Field options values should be validated here
+        TODO: Field attributes initial values should be validated here
         """
         return True

@@ -1,5 +1,3 @@
-import pytest
-
 from canopy.factories import ControllerFactory, SlotFactory
 from canopy.forms import SlotAdminForm
 from canopy.models import Slot
@@ -57,6 +55,6 @@ def test_admin_edition_kind_options(db):
     getted = Slot.objects.get(pk=saved.id)
 
     # Kind should has been changed and options values reset
-    #assert getted.kind == "email"
+    # assert getted.kind == "email"
     assert getted.field_options == {}
     assert getted.widget_options == {}

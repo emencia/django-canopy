@@ -3,7 +3,7 @@ from functools import cache
 from django.conf import settings
 from django.utils.functional import lazy
 
-from . import SlotDefinitionsRegistry
+from . import DefinitionsRegistry
 
 
 @cache
@@ -14,7 +14,7 @@ def _get_registry():
     This is also where registry is filled with default definitions if setting
     ``CANOPY_REGISTRY_AUTOLOAD`` allows it.
     """
-    registry = SlotDefinitionsRegistry()
+    registry = DefinitionsRegistry()
 
     if (
         settings.CANOPY_REGISTRY_AUTOLOAD is True and
@@ -26,4 +26,4 @@ def _get_registry():
     return registry
 
 
-get_registry = lazy(_get_registry, SlotDefinitionsRegistry)
+get_registry = lazy(_get_registry, DefinitionsRegistry)

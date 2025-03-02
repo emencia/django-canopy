@@ -8,8 +8,8 @@ from canopy.definitions.registry import get_registry
 registry = get_registry()
 
 
-# Reserved controller keywords to not override form class properties/methods, it should
-# include also the ones from 'forms.Form'
+# Reserved controller keywords to not override form class properties/methods, it may
+# includes also the ones from 'forms.Form'
 FORBIDDEN_SLOT_NAMES = ("controller", "save")
 
 
