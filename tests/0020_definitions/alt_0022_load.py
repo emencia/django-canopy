@@ -1,8 +1,5 @@
-from django import forms
-
 from canopy.definitions.alt_init import DefinitionsRegistry
-from canopy.definitions.slots import Kind, KindField, KindWidget
-from canopy.definitions.kinds import BooleanKind, EmailKind, TextareaKind, TextKind
+from canopy.definitions.kinds import BooleanKind
 
 
 def test_load_dict(settings):

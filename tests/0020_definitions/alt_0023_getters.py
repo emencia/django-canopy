@@ -86,33 +86,33 @@ def test_get_set_default():
         registry.set_default("nope")
 
 
-def test_get_kind_definition(db):
+def test_get_definition(db):
     """
-    'get_kind_definition' method returns the definition for given kind.
+    'get_definition' method returns the definition for given kind.
     """
     registry = DefinitionsRegistry()
     registry.load("canopy.definitions.alt_tests")
 
     # Without argument, the default definition is returned
-    default_def = registry.get_kind_definition()
+    default_def = registry.get_definition()
     assert default_def.name == registry.get(registry.get_default()).name
 
     controller = ControllerFactory()
     slot = SlotFactory(controller=controller, kind="text-simple")
-    text_def = registry.get_kind_definition(kind=slot)
+    text_def = registry.get_definition(kind=slot)
     assert text_def.name == "Simple text"
 
 
-def test_get_kind_field_attributes_fields(db):
+def test_get_kind_field_options(db):
     """
-    'get_kind_field_attributes_fields' method field or widget options for given kind
+    'get_kind_field_options' method field or widget options for given kind
     """
     registry = DefinitionsRegistry()
     registry.load("canopy.definitions.alt_tests")
 
     controller = ControllerFactory()
     slot = SlotFactory(controller=controller, kind="text-simple")
-    field_fields = registry.get_kind_field_attributes_fields("field", kind=slot.kind)
+    field_fields = registry.get_kind_field_options("field", kind=slot.kind)
 
     assert "max_length" in field_fields
     assert "strip" in field_fields

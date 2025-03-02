@@ -3,12 +3,9 @@ from dataclasses import FrozenInstanceError
 import pytest
 
 from django import forms
-
 from pydantic import ValidationError
 
-from canopy.definitions import SlotDefinitionsRegistry
-from canopy.definitions.slots import Kind, KindField, KindWidget
-from canopy.factories import ControllerFactory, SlotFactory
+from canopy.definitions.base import Kind, KindField
 
 
 def test_init_empty():
@@ -81,12 +78,12 @@ def test_init_basic():
         name="My kind",
         field=KindField(
             klass=forms.CharField,
-            attributes_initials={"max_length": 42}
+            initials={"max_length": 42}
         ),
     )
 
     assert foo.identifier == "my-kind"
-    assert foo.field.attributes_initials == {"max_length": 42}
+    assert foo.field.initials == {"max_length": 42}
 
     with pytest.raises(FrozenInstanceError):
         foo.identifier = "nope"

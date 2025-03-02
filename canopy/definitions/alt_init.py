@@ -86,13 +86,11 @@ class DefinitionsRegistry:
 
     def load(self, definitions, default=None):
         """
-        Load definitions from a module or a dictionnary.
+        Load definitions from a module or a list of ``Kind`` objects.
 
         Each call to load does not reset previously loaded definitions, it is
         cumulative. However subsequent loads can override previously loaded
         definitions.
-
-        TODO: Follow refactoring of Slot kinds
 
         Arguments:
             definitions (iterable or string): Either an iterable of definitions to
@@ -165,7 +163,7 @@ class DefinitionsRegistry:
             altered further from your code else you will mutate its content during
             current Python session.
 
-            Prefer to use ``SlotDefinitionsRegistry.get_kind_definition(..)`` instead
+            Prefer to use ``SlotDefinitionsRegistry.get_definition(..)`` instead
             that is safe against mutations. If you are not able to do so, use
             ``copy.deepcopy()`` on returned definition.
 
@@ -184,7 +182,10 @@ class DefinitionsRegistry:
 
     def get_all(self):
         """
-        Shortcut method to definitions attribute.
+        Shortcut method to ``definitions`` attribute.
+
+        Returns:
+            dict: All registered definitions.
         """
         return self.definitions
 
@@ -211,7 +212,7 @@ class DefinitionsRegistry:
         """
         return self.default_kind or self.names()[0]
 
-    def get_kind_definition(self, kind=None):
+    def get_definition(self, kind=None):
         """
         Get a definition from a Slot object or a ``kind`` name.
 
@@ -234,7 +235,7 @@ class DefinitionsRegistry:
 
         return self.get(kind)
 
-    def get_kind_field_attributes_fields(self, attrname, kind=None):
+    def get_kind_field_options(self, attrname, kind=None):
         """
         Get all attributes for field or widget according to a kind (given or default).
 
@@ -249,13 +250,13 @@ class DefinitionsRegistry:
         Returns:
             dict: Possible field attributes if any else an empty dict.
         """
-        kind = self.get_kind_definition(kind=kind)
+        kind = self.get_definition(kind=kind)
         if not getattr(kind, attrname):
             return {}
 
-        return getattr(kind, attrname).attributes_fields
+        return getattr(kind, attrname).options
 
-    def get_kind_field_attributes_initials(self, kind=None):
+    def get_kind_field_initials(self, kind=None):
         """
         Get initial field attributes values for given kind key or Slot.
 
@@ -268,8 +269,8 @@ class DefinitionsRegistry:
         Returns:
             dict:
         """
-        kind = self.get_kind_definition(kind=kind)
-        return kind.field.get("attributes_initials", {})
+        kind = self.get_definition(kind=kind)
+        return kind.field.get("initials", {})
 
     def validate_field_attributes(self, attrname, kind, values):
         """
