@@ -9,5 +9,5 @@ These are the model object factories made with
 model object creation.
 
 .. automodule:: canopy.factories
-    :members: CanopyFactory
+    :members:
     :undoc-members:

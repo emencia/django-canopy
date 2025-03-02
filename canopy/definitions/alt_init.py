@@ -7,7 +7,7 @@ from django.utils.module_loading import import_string
 from ..exceptions import DefinitionRegistryError
 
 
-class SlotDefinitionsRegistry:
+class DefinitionsRegistry:
     """
     Definition registry for slot kinds.
 
@@ -38,68 +38,6 @@ class SlotDefinitionsRegistry:
         self.default_kind = None
         self.definitions = {}
 
-    def check_definitions(self, definitions):
-        """
-        Check given definitions.
-
-        * All definition must have a "name" and "field" items.
-        * Field item must have a "class" item;
-        * If widget item exists, it must include a "class" item;
-
-        .. Note::
-            There is currently no validation against options.
-
-        Arguments:
-            definitions (dict): All definition items to validate.
-
-        Raises:
-            DefinitionRegistryError: In case of invalid items, this exceptions is
-            raised. Note that it will regroup all items errors but the exception
-            message is just a basic error message. To retrieve detail errors you will
-            need to use the exception method ``.get_payload_details()``.
-
-        Returns:
-            bool: True if all definitions are valid.
-        """
-        errors = []
-
-        for key, data in definitions.items():
-            # Definition value must be a dict
-            if not isinstance(data, dict):
-                msg = "{key}: value must be a dictionnary."
-                errors.append(msg.format(key=key))
-                continue
-
-            # Definition name is required
-            if "name" not in data:
-                errors.append("{key}: is missing 'name' item.".format(key=key))
-
-            # Definition field is required
-            if "field" not in data:
-                errors.append("{key}: is missing 'field' item.".format(key=key))
-            else:
-                # Definition field class is required (but not checked for its type)
-                if "class" not in data["field"]:
-                    errors.append(
-                        "{key}: 'field' is missing 'class' item.".format(key=key)
-                    )
-                # TODO: Validate "options_fields" so option names could not override
-                # existing Slot attribute, especially its model fields (?? if it's for
-                # form it's useless as explained in ControllerBaseForm).
-
-            # Definition widget is optional
-            if "widget" in data:
-                # Definition widget class is required (but not checked for its type)
-                if "class" not in data["widget"]:
-                    errors.append(
-                        "{key}: 'widget' is missing 'class' item.".format(key=key)
-                    )
-
-        if errors:
-            raise DefinitionRegistryError(error_messages=errors)
-
-        return True
-
     def check_default(self, value):
         """
         Check given default definition key name.
@@ -117,7 +55,7 @@ class SlotDefinitionsRegistry:
             need to use the exception method ``.get_payload_details()``.
 
         Returns:
-            bool: True if given default key name is valid.
+            boolean: True if given default key name is valid.
         """
         errors = []
 
@@ -154,11 +92,13 @@ class SlotDefinitionsRegistry:
         cumulative. However subsequent loads can override previously loaded
         definitions.
 
+        TODO: Follow refactoring of Slot kinds
+
         Arguments:
-            definitions (dict or string): Either a dict of definitions to append or
-                a string for a Python path to module to import to get definitions to
-                append. Definitions are expected to be in a ``DEFINITIONS`` variable
-                from the import module.
+            definitions (iterable or string): Either an iterable of definitions to
+                append or a string for a Python path to module to import to get
+                definitions to append. Definitions are expected to be in a
+                ``DEFINITIONS`` variable from the imported module.
 
         Keyword Arguments:
             default (string): Set value as default if it is a string. Else if value
@@ -173,11 +113,19 @@ class SlotDefinitionsRegistry:
         if isinstance(definitions, str):
             defs = import_string(definitions + ".DEFINITIONS")
             imported_modulepath = definitions
-        elif isinstance(definitions, dict):
+        elif isinstance(definitions, list) or isinstance(definitions, tuple):
             defs = definitions
+        else:
+            msg = (
+                "Definitions must be provided either as a list, a tuple or a string "
+                "(for a module Python path) not '{}'"
+            )
+            raise ValueError(msg.format(type(definitions).__name__))
 
-        if self.check_definitions(defs):
-            self.definitions.update(defs)
+        self.definitions.update({
+            item.identifier: item
+            for item in defs
+        })
 
         if default is None and imported_modulepath:
             try:
@@ -249,7 +197,7 @@ class SlotDefinitionsRegistry:
             definition key and definition name.
         """
         return [
-            (k, v["name"])
+            (k, v.name)
             for k, v in self.definitions.items()
         ]
 
@@ -261,7 +209,7 @@ class SlotDefinitionsRegistry:
             string: The default definition name is either the defined default (from
             loading) or the first one from definitions if there is no default.
         """
-        return self.default_kind or list(self.definitions.keys())[0]
+        return self.default_kind or self.names()[0]
 
     def get_kind_definition(self, kind=None):
         """
@@ -284,11 +232,11 @@ class SlotDefinitionsRegistry:
         if isinstance(kind, models.Model) and hasattr(kind, "kind"):
             kind = kind.kind
 
-        return copy.deepcopy(self.get(kind))
+        return self.get(kind)
 
-    def get_kind_field_options(self, attrname, kind=None):
+    def get_kind_field_attributes_fields(self, attrname, kind=None):
         """
-        Get all options for field or widget according to a kind (given or default).
+        Get all attributes for field or widget according to a kind (given or default).
 
         Arguments:
             attrname (string): The Slot attribute name for the related option field
@@ -299,16 +247,19 @@ class SlotDefinitionsRegistry:
                 default this is the default kind choice key.
 
         Returns:
-            dict: Possible field options if any else an empty dict.
+            dict: Possible field attributes if any else an empty dict.
         """
         kind = self.get_kind_definition(kind=kind)
-        return kind.get(attrname, {}).get("options_fields", {})
+        if not getattr(kind, attrname):
+            return {}
 
-    def get_kind_field_options_initials(self, kind=None):
+        return getattr(kind, attrname).attributes_fields
+
+    def get_kind_field_attributes_initials(self, kind=None):
         """
-        Get initial fields values for field options for given kind key or Slot.
+        Get initial field attributes values for given kind key or Slot.
 
-        This is only about kind field since widget does not manage any value.
+        This is only about kind field since widget does not manage any initials.
 
         Keyword Arguments:
             kind (string or Slot): the Slot kind key to search for definition. On
@@ -318,10 +269,10 @@ class SlotDefinitionsRegistry:
             dict:
         """
         kind = self.get_kind_definition(kind=kind)
-        return kind["field"].get("options", {})
+        return kind.field.get("attributes_initials", {})
 
-    def validate_field_options(self, attrname, kind, values):
+    def validate_field_attributes(self, attrname, kind, values):
         """
-        TODO: Field options values should be validated here
+        TODO: Field attributes initial values should be validated here
         """
         return True

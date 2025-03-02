@@ -10,6 +10,14 @@ class SlotAdmin(admin.ModelAdmin):
     This includes some code to tweak the admin form process that is not as simple as
     non admin form (because model admin needs to introspect a lot). Original code
     idea comes from https://stackoverflow.com/a/62719818 with some adjustments.
+
+    TODO:
+        We tried to inject some field inputs for the Slot options
+        (field&widget). I dont really remember the stage of advancement of this way.
+
+        With the definition registry interface it may be easier to retrieve options
+        datas to build fields, but i don't know about to fill them with data from JSON,
+        how to validate their value.
     """
     form = SlotAdminForm
     list_display = (
@@ -25,12 +33,17 @@ class SlotAdmin(admin.ModelAdmin):
 
     def get_fields(self, request, obj=None):
         """
-        TODO: It does not care yet about widget options fields.
+        Slot options are currently not managed since we currently dont have the proper
+        final solution yet.
+
+        It may be better first to ensure the Definition registry is fully featured to
+        stand on and helps to implement final option management from admin.
         """
+        # Slot has no '_default_options_***()' methods
         field_options_fields = (
-            obj.options_fields("field")
+            obj.field_options
             if obj
-            else Slot._default_options_fields("field")
+            else {}
         )
 
         # widget_options_fields = (

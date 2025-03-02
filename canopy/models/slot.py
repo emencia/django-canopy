@@ -101,18 +101,18 @@ class Slot(models.Model):
 
     field_options = models.JSONField(blank=True, default=empty_fresh_dictionnary)
     """
-    Optional JSON value to hold input extra options.
+    Optional JSON value to hold option input values.
     """
 
     widget_options = models.JSONField(blank=True, default=empty_fresh_dictionnary)
     """
-    Optional JSON value to hold widget extra options.
+    Optional JSON value to hold option widget values.
     """
 
     class Meta:
         ordering = ["label"]
-        verbose_name = _("Form slot")
-        verbose_name_plural = _("Form slots")
+        verbose_name = _("Controller slot")
+        verbose_name_plural = _("Controllers slots")
         constraints = [
             models.UniqueConstraint(
                 name="canopy_unique_slot_label",
@@ -165,8 +165,8 @@ class Slot(models.Model):
 
     def clean_field_options(self):
         """
-        NOTE: Registry would have to validate options values against kind definition
-        fields options
+        NOTE: Registry would have to validate values against field options from the
+        slot kind definition
         """
         if not isinstance(self.field_options, dict):
             raise ValidationError({
@@ -177,8 +177,8 @@ class Slot(models.Model):
 
     def clean_widget_options(self):
         """
-        NOTE: Registry would have to validate options values against kind definition
-        widgets options
+        NOTE: Registry would have to validate values against widget options from the
+        slot kind definition
         """
         if not isinstance(self.widget_options, dict):
             raise ValidationError({

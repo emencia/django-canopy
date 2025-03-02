@@ -13,7 +13,7 @@ def test_get_kind_definition(db):
     """
     registry = SlotDefinitionsRegistry()
 
-    # There is not any available definition and so no default
+    # When there is not any available definition and so no default, it should fails.
     with pytest.raises(IndexError):
         registry.get_kind_definition()
 

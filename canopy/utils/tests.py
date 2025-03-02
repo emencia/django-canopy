@@ -226,7 +226,7 @@ def compact_form_errors(form):
         value is a list of error codes.
     """
     errors = {}
-    print(form.errors)
+
     for name, validationerror in form.errors.as_data().items():
         errors[name] = [item.code for item in validationerror]
 

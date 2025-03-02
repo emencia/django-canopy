@@ -8,5 +8,5 @@ These are the `Django model <https://docs.djangoproject.com/en/4.2/topics/db/mod
 object definitions used in application with Django ORM.
 
 .. automodule:: canopy.models
-    :members: CanopyModel
+    :members:
     :exclude-members: DoesNotExist, MultipleObjectsReturned

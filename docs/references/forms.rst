@@ -11,7 +11,3 @@ used to implement forms.
 .. automodule:: canopy.forms
     :members:
     :undoc-members:
-
-.. automodule:: canopy.form_helpers
-    :members:
-    :undoc-members:

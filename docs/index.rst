@@ -9,6 +9,7 @@ Contents
 
    install.rst
    settings.rst
+   overview.rst
    references/index.rst
 
 

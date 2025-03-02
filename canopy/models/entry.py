@@ -40,8 +40,8 @@ class Entry(models.Model):
 
     class Meta:
         ordering = ["-created"]
-        verbose_name = _("Form entry")
-        verbose_name_plural = _("Form entries")
+        verbose_name = _("Controller entry")
+        verbose_name_plural = _("Controllers entries")
 
     def __str__(self):
         return "{controller}: {created}".format(
