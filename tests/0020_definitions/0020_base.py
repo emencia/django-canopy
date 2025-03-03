@@ -41,9 +41,13 @@ def test_init_empty():
 def test_init_args_types():
     """
     Definition expect specific types for its arguments values
+
+    NOTE: Currently the validation of 'name' is openbar because we allow for 'Any' type
+    because of problem to declare the proper type for
+    'django.utils.translation import gettext_lazy' with Pydantic.
     """
     with pytest.raises(ValidationError) as exc_info:
-        Kind(identifier=42, name=77, field="niet")
+        Kind(identifier=42, name="foo", field="niet")
 
     # print(exc_info.value.json(indent=4))
     errors = [
@@ -56,11 +60,11 @@ def test_init_args_types():
             "loc": ("identifier",),
             "msg": "Input should be a valid string"
         },
-        {
-            "type": "string_type",
-            "loc": ("name",),
-            "msg": "Input should be a valid string",
-        },
+        # {
+        #     "type": "string_type",
+        #     "loc": ("name",),
+        #     "msg": "Input should be a valid string",
+        # },
         {
             "type": "dataclass_type",
             "loc": ("field",),

@@ -3,13 +3,13 @@ from canopy.factories import ControllerFactory, SlotFactory
 from canopy.models import empty_fresh_dictionnary
 
 
-def test_get_slot_scheme_from_dict():
+def test_normalize_scheme_from_dict():
     """
-    Method get_slot_scheme should return a slot scheme from a dict.
+    Method normalize_scheme should return a slot scheme from a dict.
     """
     forge = FormClassForge()
 
-    assert forge.get_slot_scheme({
+    assert forge.normalize_scheme({
         "foo": {
             "kind": "text-simple",
             "label": "Foo",
@@ -32,13 +32,13 @@ def test_get_slot_scheme_from_dict():
     }
 
 
-def test_get_slot_scheme_from_iterable():
+def test_normalize_scheme_from_iterable():
     """
-    Method get_slot_scheme should return a slot scheme from an iterable.
+    Method normalize_scheme should return a slot scheme from an iterable.
     """
     forge = FormClassForge()
 
-    assert forge.get_slot_scheme((
+    assert forge.normalize_scheme((
         (
             "foo", {
                 "kind": "text-simple",
@@ -63,7 +63,7 @@ def test_get_slot_scheme_from_iterable():
     }
 
 
-def test_get_slot_scheme_from_controller(db):
+def test_normalize_scheme_from_controller(db):
     """
     Method should returns a slot scheme from Controller object.
     """
@@ -74,7 +74,7 @@ def test_get_slot_scheme_from_controller(db):
     SlotFactory(label="Foo", name="foo", controller=controller, position=1)
     SlotFactory(label="Bar", name="bar", controller=controller, position=2)
 
-    assert forge.get_slot_scheme(controller) == {
+    assert forge.normalize_scheme(controller) == {
         "foo": {
             "kind": "text-simple",
             "label": "Foo",

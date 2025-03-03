@@ -41,7 +41,7 @@ class BaseSlotOptionsForm:
 
 def build_options_form(attrname, slot=None):
     """
-    Build form class for Slot field options.
+    Build form class for a Slot to manage its options.
 
     TODO: It seems something that should be part of registry.
 
@@ -57,7 +57,7 @@ def build_options_form(attrname, slot=None):
     return type(
         "SlotOptionsForm",
         base_classes,
-        registry.get_kind_field_attributes_fields(
+        registry.get_kind_attr_options(
             attrname,
             kind=slot.kind if slot else None
         )

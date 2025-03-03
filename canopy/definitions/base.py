@@ -1,3 +1,5 @@
+from typing import Union, Any
+
 from django import forms
 
 from dataclasses import field
@@ -33,8 +35,12 @@ class KindWidget:
 class Kind:
     """
     Slot kind definition
+
+    .. Todo::
+        We currently use ``Any`` for ``name`` attribute since ``gettext_lazy`` is a
+        proxy function that i can't get to work with Pydantic yet.
     """
     identifier: str
-    name: str
+    name: Union[str, Any]
     field: KindField
     widget: KindWidget = field(default=None)

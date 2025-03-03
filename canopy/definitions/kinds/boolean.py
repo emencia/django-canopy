@@ -6,6 +6,6 @@ from ..base import Kind, KindField
 
 BooleanKind = Kind(
     identifier="boolean",
-    name="Boolean",
+    name=_("Boolean"),
     field=KindField(klass=forms.BooleanField)
 )

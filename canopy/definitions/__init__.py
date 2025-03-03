@@ -1,3 +1,5 @@
+import copy
+
 from django.db import models
 from django.utils.module_loading import import_string
 
@@ -229,22 +231,26 @@ class DefinitionsRegistry:
         if isinstance(kind, models.Model) and hasattr(kind, "kind"):
             kind = kind.kind
 
-        return self.get(kind)
+        # NOTE: Not sure copy is required here, DefinitionsRegistry.get() because it
+        # should returns a Kind object that is frozen. However it is right, copy should
+        # be removed here but 'get_kind_attr_**()' methods should use it for their
+        # return.
+        return copy.deepcopy(self.get(kind))
 
-    def get_kind_field_options(self, attrname, kind=None):
+    def get_kind_attr_options(self, attrname, kind=None):
         """
         Get all options for the field or widget from a kind (given or default).
 
         Arguments:
-            attrname (string): The Slot attribute name for the related option field
-                for which we search a definition. Can be either ``field`` or ``widget``.
+            attrname (string): The name for the related kind attribute for which we
+                search a definition. Can be either ``field`` or ``widget``.
 
         Keyword Arguments:
             kind (string or Slot): the Slot kind key to search for definition. On
                 default this is the default kind choice key.
 
         Returns:
-            dict: Possible field attributes if any else an empty dict.
+            dict: Possible attributes if there is any else an empty dict.
         """
         kind = self.get_definition(kind=kind)
         if not getattr(kind, attrname):
@@ -252,7 +258,7 @@ class DefinitionsRegistry:
 
         return getattr(kind, attrname).options
 
-    def get_kind_field_initials(self, kind=None):
+    def get_kind_attr_initials(self, kind=None):
         """
         Get all initial values for the field from a kind (given or default).
 
@@ -263,13 +269,7 @@ class DefinitionsRegistry:
                 default this is the default kind choice key.
 
         Returns:
-            dict:
+            dict: Possible initials if there is any else an empty dict.
         """
         kind = self.get_definition(kind=kind)
         return kind.field.initials
-
-    def validate_field_options(self, attrname, kind, values):
-        """
-        TODO: Field attributes initial values should be validated here
-        """
-        return True

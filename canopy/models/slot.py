@@ -24,9 +24,6 @@ def empty_fresh_dictionnary():
 class Slot(models.Model):
     """
     Slot defines a field for a Controller, generally a form input.
-
-    NOTE: Documentation should have a dedicated part to list all the
-    rules for slot name in a comprehensive way so it can be used for users.
     """
     controller = models.ForeignKey(
         "canopy.controller",
@@ -164,10 +161,6 @@ class Slot(models.Model):
             })
 
     def clean_field_options(self):
-        """
-        NOTE: Registry would have to validate values against field options from the
-        slot kind definition
-        """
         if not isinstance(self.field_options, dict):
             raise ValidationError({
                 "field_options": _(
@@ -176,10 +169,6 @@ class Slot(models.Model):
             })
 
     def clean_widget_options(self):
-        """
-        NOTE: Registry would have to validate values against widget options from the
-        slot kind definition
-        """
         if not isinstance(self.widget_options, dict):
             raise ValidationError({
                 "widget_options": _(

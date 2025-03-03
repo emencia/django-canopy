@@ -6,7 +6,7 @@ from ..base import Kind, KindField, KindWidget
 
 TextKind = Kind(
     identifier="text-simple",
-    name="Simple text",
+    name=_("Simple text"),
     field=KindField(
         klass=forms.CharField,
         initials={"max_length": 255},
@@ -24,7 +24,7 @@ TextKind = Kind(
 
 EmailKind = Kind(
     identifier="email",
-    name="Email",
+    name=_("Email"),
     field=KindField(
         klass=forms.EmailField,
         options={
@@ -40,7 +40,7 @@ EmailKind = Kind(
 
 TextareaKind = Kind(
     identifier="textarea",
-    name="Textarea",
+    name=_("Textarea"),
     field=KindField(
         klass=forms.CharField,
         initials={"max_length": 3000}

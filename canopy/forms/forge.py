@@ -1,5 +1,3 @@
-import copy
-
 from django import forms
 from django.utils.translation import gettext_lazy as _
 
@@ -21,7 +19,7 @@ class FormClassForge:
     def __init__(self, default_klass=None):
         self.default_klass = default_klass or ControllerBaseForm
 
-    def get_slot_scheme(self, scheme):
+    def normalize_scheme(self, content):
         """
         Normalize given content as a proper slot scheme.
 
@@ -29,73 +27,68 @@ class FormClassForge:
         types.
 
         Arguments:
-            scheme (object): Either a dict, a list or a Controller instance. Dict or
+            content (object): Either a dict, a list or a Controller instance. Dict or
                 list format must be a valid slot scheme.
 
         Returns:
             dict: A slot scheme suitable for ``get_form_fields``.
         """
-        if isinstance(scheme, list) or isinstance(scheme, tuple):
-            scheme = dict(scheme)
-        elif isinstance(scheme, Controller):
-            scheme = scheme.slot_schemes()
+        if isinstance(content, list) or isinstance(content, tuple):
+            content = dict(content)
+        elif isinstance(content, Controller):
+            content = content.slot_values()
 
-        return scheme
+        return content
 
     def build_slot_widget(self, definition, slot):
         """
-        Build field widget for given slot and definition.
-
-        TODO: Shouldn't this done (fully or partially) with registry instead ?
+        Build field widget for given slot.
 
         Arguments:
-            definition (dict):
-            slot (dict):
+            definitions (Kind): TODO Should be unused after finished to transitate to
+                Definition registry usage.
+            slot (dict): Slot item from a scheme.
 
         Returns:
-            django.forms.Field:
+            django.forms.Widget:
         """
-        klass = definition.get("class", None)
-        attrs = copy.deepcopy(definition.get("options", {}))
-        # TODO: Not applied yet
-        slot_options = slot.get("widget_options", {})
-
-        if not klass:
+        if not definition:
             return None
 
+        attrs = registry.get_kind_attr_options("widget", kind=definition)
+        slot_options = slot.get("widget_options", {})
+
         if not attrs:
-            widget = klass
+            widget = definition.klass
         else:
             attrs.update(slot_options)
-            widget = klass(attrs=attrs)
+            widget = definition.klass(attrs=attrs)
 
         return widget
 
-    def build_slot_field(self, definitions, slot):
+    def build_slot_field(self, slot):
         """
         Build field for given slot.
 
-        TODO: Shouldn't this be done (fully or partially) with registry instead ?
-
         Arguments:
-            definitions (dict):
-            slot (dict):
+            slot (dict): Slot item from a scheme.
 
         Returns:
-            django.forms.Field:
+            django.forms.Field: Built Django form field object.
         """
-        if slot["kind"] not in definitions:
+        if not registry.has(slot["kind"]):
             msg = _("Slot definition does not exists for given name: {}")
             raise ControllerError(msg.format(slot["kind"]))
 
-        slot_definition = definitions[slot["kind"]]
+        kind = registry.get(slot["kind"])
+        print("kind:", type(kind), kind)
 
         # Get the field definition
-        field_definition = slot_definition["field"]
-        field_kwargs = copy.deepcopy(field_definition.get("options", {}))
-
-        # Get the slot field options values
-        # TODO: Not applied yet
+        field_definition = kind.field
+        field_kwargs = registry.get_kind_attr_initials(kind=slot["kind"])
+        # NOTE: Currently we just pass initial field attribute values from the Kind
+        # definition but concretely they should be updated with the corresponding Slot
+        # json values.
         # slot_field_options = slot["field_options"]
 
         # Then update field options with slot object values
@@ -107,26 +100,25 @@ class FormClassForge:
         })
 
         # Append possible widget with options if any
-        widget = self.build_slot_widget(slot_definition.get("widget", {}), slot)
+        widget = self.build_slot_widget(kind.widget, slot)
         if widget:
             field_kwargs["widget"] = widget
 
         # Initialize and register field with its options
-        return field_definition["class"](**field_kwargs)
+        return field_definition.klass(**field_kwargs)
 
-    def get_form_fields(self, definitions, scheme):
+    def get_form_fields(self, scheme):
         """
-        Returns a dict of form fields for given slot scheme and available definitions.
+        Returns a dict of form fields for given slot scheme.
 
         Arguments:
-            definitions (dict):
             scheme (dict):
 
         Returns:
             dict:
         """
         return {
-            name: self.build_slot_field(definitions, slot)
+            name: self.build_slot_field(slot)
             for name, slot in scheme.items()
         }
 
@@ -161,9 +153,9 @@ class FormClassForge:
             definitions if isinstance(definitions, dict) else registry.get_all()
         )
 
-        scheme = self.get_slot_scheme(scheme)
+        scheme = self.normalize_scheme(scheme)
 
-        attrs = self.get_form_fields(definitions, scheme)
+        attrs = self.get_form_fields(scheme)
         if extra_attrs:
             attrs.update(extra_attrs)
 

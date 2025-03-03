@@ -61,23 +61,24 @@ class Controller(models.Model):
 
     def get_absolute_url(self):
         """
-        Return absolute URL to the category detail view.
+        Return absolute URL to the controller detail view.
 
         Returns:
             string: An URL.
         """
         return reverse("canopy:controller-form", kwargs={"slug": self.slug})
 
-    def slot_schemes(self, queryset=None):
+    def slot_values(self, queryset=None):
         """
-        Returns all controller slot objects values.
+        Returns a dictionnary which contains all controller slot values.
 
         Keyword Arguments:
             queryset (Queryset): A custom queryset to use instead of the default one
                 which get all controller slot objects.
 
         Returns:
-            dict: Slot definitions.
+            dict: Slot values, each item key is the slot name and value is a dict of
+            values.
         """
         queryset = queryset or self.slot_set.all()
 
@@ -97,16 +98,18 @@ class Controller(models.Model):
         }
 
     @cached_property
-    def fields_schemes(self):
+    def slot_fields_values(self):
         """
-        Returns the field slot parameters schemes.
+        Returns the slots fields values.
 
-        NOTE: This property exists because we plan to have non field slots.
+        NOTE: This property exists because we plan to have non field slots. In future
+        we would have non field slot that we would distinct here to only return fields
+        values
 
         Returns:
-            dict: Slot definitions.
+            dict: Fields values.
         """
-        return self.slot_schemes()
+        return self.slot_values()
 
     def save(self, *args, **kwargs):
         # Auto update 'last_update' value on each save

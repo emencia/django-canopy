@@ -6,6 +6,6 @@ from ..base import Kind, KindField
 
 DateKind = Kind(
     identifier="date",
-    name="Date",
+    name=_("Date"),
     field=KindField(klass=forms.DateField)
 )
