@@ -40,29 +40,28 @@ class FormClassForge:
 
         return content
 
-    def build_slot_widget(self, definition, slot):
+    def build_slot_widget(self, kind, slot):
         """
         Build field widget for given slot.
 
         Arguments:
-            definitions (Kind): TODO Should be unused after finished to transitate to
-                Definition registry usage.
+            kind (Kind):
             slot (dict): Slot item from a scheme.
 
         Returns:
             django.forms.Widget:
         """
-        if not definition:
+        if not kind:
             return None
 
-        attrs = registry.get_kind_attr_options("widget", kind=definition)
+        attrs = registry.get_kind_attr_options("widget", kind=kind)
         slot_options = slot.get("widget_options", {})
 
         if not attrs:
-            widget = definition.klass
+            widget = kind.klass
         else:
             attrs.update(slot_options)
-            widget = definition.klass(attrs=attrs)
+            widget = kind.klass(attrs=attrs)
 
         return widget
 
@@ -81,7 +80,6 @@ class FormClassForge:
             raise ControllerError(msg.format(slot["kind"]))
 
         kind = registry.get(slot["kind"])
-        print("kind:", type(kind), kind)
 
         # Get the field definition
         field_definition = kind.field
@@ -91,7 +89,7 @@ class FormClassForge:
         # json values.
         # slot_field_options = slot["field_options"]
 
-        # Then update field options with slot object values
+        # Update field options with slot object values
         field_kwargs.update({
             "label": slot["label"],
             "initial": slot["initial"],

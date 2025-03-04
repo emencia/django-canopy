@@ -12,8 +12,6 @@ from ..forms.forge import FormClassForge
 class ControllerFormView(FormView):
     """
     View to display a Controller form.
-
-    TODO: Help i'm not tested yet.
     """
     template_name = "canopy/controller/form.html"
     form_class = forms.Form  # Not used
@@ -21,6 +19,7 @@ class ControllerFormView(FormView):
 
     def get_object(self):
         try:
+            # TODO: Use select_related for slots ?
             obj = Controller.objects.get(slug=self.kwargs["slug"])
         except Controller.DoesNotExist:
             raise Http404(
@@ -85,8 +84,7 @@ class ControllerSuccessView(TemplateView):
     """
     Basic template view to respond to form submit success.
 
-    TODO: Success view need to have the controller object it come from so the view
-    could use some Controller options (like custom template, custom success message,
-    etc..)
+    TODO: Success view need to receive the Entry id so we would have stored data and
+    also a way to reach the Controller object
     """
     template_name = "canopy/controller/success.html"
