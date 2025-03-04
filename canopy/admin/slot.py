@@ -1,5 +1,7 @@
 from django.contrib import admin
 
+from adminsortable2.admin import SortableTabularInline
+
 from ..models import Slot
 from ..forms import SlotAdminForm
 
@@ -70,3 +72,12 @@ class SlotAdmin(admin.ModelAdmin):
         development we want to see what they are holding
         """
         return self.readonly_fields + ("field_options", "widget_options")
+
+
+class SlotAdminInline(SortableTabularInline):
+    """
+    Slot inline model admin for Controller admin.
+    """
+    model = Slot
+    exclude = ["help_text", "initial", "field_options", "widget_options", ]
+    extra = 0

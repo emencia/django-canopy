@@ -1,5 +1,6 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django.core.serializers.json import DjangoJSONEncoder
 
 
 def empty_fresh_dictionnary():
@@ -28,9 +29,16 @@ class Entry(models.Model):
     Required version positive integer. This would be the current controller version.
     """
 
-    data = models.JSONField(null=False, default=empty_fresh_dictionnary)
+    data = models.JSONField(
+        null=False,
+        default=empty_fresh_dictionnary,
+        encoder=DjangoJSONEncoder
+    )
     """
     Required JSON value Where is saved data from a request.
+
+    TODO: Use a custom encoder to ensure all field value types are supported (like date
+    objects).
     """
 
     created = models.DateTimeField(auto_now_add=True)

@@ -1,6 +1,7 @@
 .. _Python: https://www.python.org/
 .. _Django: https://www.djangoproject.com/
 .. _DjangoCMS: https://docs.django-cms.org/en/release-3.11.x/
+.. _django-admin-sortable2: https://github.com/jrief/django-admin-sortable2
 
 ======
 Canopy
@@ -22,6 +23,7 @@ Dependencies
 
 * `Python`_>=3.10;
 * `Django`_>=4.0,<5.0;
+* `django-admin-sortable2`_>=2.2.4;
 * (optional) `DjangoCMS`_>=3.11.0,<4.0;
 
 

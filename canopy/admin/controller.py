@@ -1,10 +1,13 @@
 from django.contrib import admin
 
+from adminsortable2.admin import SortableAdminBase
+
 from ..models import Controller
+from .slot import SlotAdminInline
 
 
 @admin.register(Controller)
-class ControllerAdmin(admin.ModelAdmin):
+class ControllerAdmin(SortableAdminBase, admin.ModelAdmin):
     """
     TODO:
     Admin form edit view will have to display its slots.
@@ -17,7 +20,8 @@ class ControllerAdmin(admin.ModelAdmin):
 
     Also, an additional button to create a new slot would be nice.
 
-    This probably won't be achieved with inline Slot form.
+    We may start with inline items to start with something and look if it can be
+    customized enough for our needs.
     """
     list_display = (
         "title",
@@ -27,4 +31,7 @@ class ControllerAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     search_fields = [
         "title",
+    ]
+    inlines = [
+        SlotAdminInline,
     ]

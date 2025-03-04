@@ -9,9 +9,9 @@ class ControllerBaseForm:
     after base form class.
 
     .. Note::
-        Almost all internal methods not intended to overwrite ``forms.Form`` methods,
-        are to be prefixed with an underscore to ensure they won't break some obscure
-        ``forms.Form`` mechanic.
+        Almost all internal methods are not intended to overwrite ``forms.Form``
+        methods and are to be prefixed with an underscore to ensure they won't break
+        some obscure ``forms.Form`` mechanic.
 
     TODO:
         We should have a way to have silent and automatically fill virtual fields.

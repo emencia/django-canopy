@@ -74,9 +74,11 @@ class Slot(models.Model):
     Optional boolean to make slot required.
     """
 
-    position = models.IntegerField(
+    position = models.PositiveIntegerField(
         _("position"),
-        default=0
+        default=0,
+        blank=False,
+        null=False,
     )
     """
     Required position order in slot list.
@@ -107,7 +109,7 @@ class Slot(models.Model):
     """
 
     class Meta:
-        ordering = ["label"]
+        ordering = ["position"]
         verbose_name = _("Controller slot")
         verbose_name_plural = _("Controllers slots")
         constraints = [

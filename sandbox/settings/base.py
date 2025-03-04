@@ -155,6 +155,12 @@ EMAIL_PORT = None
 
 
 """
+'django-admin-sortable2' configuration
+"""
+INSTALLED_APPS.append("adminsortable2")
+
+
+"""
 Canopy-form configuration
 """
 from canopy.settings import *  # noqa: E402,F401,F403
