@@ -34,7 +34,9 @@ class Controller(models.Model):
 
     version = models.PositiveSmallIntegerField(
         _("version"),
-        default=1,
+        default=0,
+        blank=False,
+        null=False,
     )
     """
     Required version positive integer. This would be automatically updated on
@@ -114,5 +116,6 @@ class Controller(models.Model):
     def save(self, *args, **kwargs):
         # Auto update 'last_update' value on each save
         self.last_update = timezone.now()
+        self.version = self.version + 1
 
         super().save(*args, **kwargs)

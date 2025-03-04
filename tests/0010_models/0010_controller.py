@@ -50,3 +50,25 @@ def test_factory_basic(db, settings):
     # Force model validation since factory bypass it
     controller.full_clean()
     assert Controller.objects.filter(pk=controller.id).count() == 1
+
+
+def test_model_version_auto_increment(db, settings):
+    """
+    Controller version should be incremented on each save.
+    """
+    controller = Controller(
+        title="Contact",
+        slug="contact",
+    )
+    controller.full_clean()
+    controller.save()
+    assert controller.version == 1
+
+    controller = ControllerFactory(title="tata")
+    assert controller.version == 1
+
+    controller.title = "titi"
+    controller.save()
+    controller.refresh_from_db()
+    assert controller.title == "titi"
+    assert controller.version == 2
