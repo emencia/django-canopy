@@ -1,3 +1,4 @@
+from ..form_helpers import ControllerViewFormHelper
 from ..models import Entry
 
 
@@ -36,6 +37,8 @@ class ControllerBaseForm:
             )
 
         super().__init__(*args, **kwargs)
+
+        self.helper = ControllerViewFormHelper()
 
     def _get_slot_datas(self):
         """

@@ -83,9 +83,5 @@ class ControllerFormView(FormView):
 class ControllerSuccessView(TemplateView):
     """
     Basic template view to respond to form submit success.
-
-    TODO: Success view need to receive the Entry id so we would have stored data and
-    also a way to reach the Controller object. We may use 'Django signed' to transit ID
-    in redirection URL.
     """
     template_name = "canopy/controller/success.html"

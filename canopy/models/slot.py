@@ -28,6 +28,8 @@ class Slot(models.Model):
     controller = models.ForeignKey(
         "canopy.controller",
         on_delete=models.CASCADE,
+        blank=False,
+        null=False,
     )
     """
     Required controller relation.

@@ -161,6 +161,19 @@ INSTALLED_APPS.append("adminsortable2")
 
 
 """
+Crispy forms part
+"""
+CRISPY_ALLOWED_TEMPLATE_PACKS = "bootstrap5"
+
+CRISPY_TEMPLATE_PACK = "bootstrap5"
+
+INSTALLED_APPS.extend([
+    "crispy_forms",
+    "crispy_bootstrap5",
+])
+
+
+"""
 Canopy-form configuration
 """
 from canopy.settings import *  # noqa: E402,F401,F403
