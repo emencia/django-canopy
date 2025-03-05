@@ -41,7 +41,7 @@ class Slot(models.Model):
         choices=registry.get_choices(),
         default=registry.get_default(),
         help_text=_(
-            "If you change this after initial save, all field and widget options "
+            "If you change this on an existing objects, all field and widget options "
             "will be lost."
         ),
     )

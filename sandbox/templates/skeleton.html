@@ -1,4 +1,4 @@
-{% load static i18n cms_tags menu_tags sekizai_tags %}<!DOCTYPE html>
+{% load static i18n %}<!DOCTYPE html>
 <html  lang="{{ LANGUAGE_CODE }}">
     <head>{% spaceless %}
         <meta charset="utf-8">
@@ -6,11 +6,9 @@
         <title>{% block head_title %}django-canopy{% endblock head_title %}</title>
         <link rel="stylesheet" type="text/css" href="{% static "css/main.css" %}">
     {% endspaceless %}
-    {% render_block "css" %}
     </head>
 
     <body>
-    {% cms_toolbar %}
     {% spaceless %}
         <div id="page-body" class="d-grid gap-3 p-3">
             <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
@@ -23,7 +21,6 @@
 
                     <div class="collapse navbar-collapse" id="main-navbar-toggler">
                         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                            {% show_menu 1 100 100 100 "menus/flat.html" %}
                         </ul>
 
                         <div class="d-flex">
@@ -43,7 +40,7 @@
                 {% block content %}{% endblock %}
             </div>
         </div>
-        {% endspaceless %}{% render_block "js" %}{% spaceless %}
+        {% endspaceless %}{% spaceless %}
         <script src="{% static "js/main.js" %}"></script>
     {% endspaceless %}</body>
 </html>
