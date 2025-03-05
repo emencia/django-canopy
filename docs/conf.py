@@ -10,8 +10,10 @@
 # add these directories to sys.path here. If the directory is relative to the
 # documentation root, use os.path.abspath to make it absolute, like shown here.
 #
+import datetime
 import os
 import sys
+
 
 # Settings file required by Django
 sys.path.append(os.path.join(os.path.dirname(__file__), "."))
@@ -29,8 +31,9 @@ from canopy import __version__ as canopy_version
 
 # -- Project information -----------------------------------------------------
 
+now = datetime.date.today()
 project = "canopy"
-copyright = "2024, Emencia"
+copyright = "2024-{}, Emencia".format(now.year)
 author = "Emencia"
 
 # The short X.Y version
@@ -48,6 +51,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.viewcode",
     "sphinx.ext.napoleon",
+    "sphinx.ext.todo",
     "sphinx_copybutton",
 ]
 

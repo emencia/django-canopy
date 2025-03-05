@@ -14,11 +14,11 @@ DATABASES = {
 # media directory
 MEDIA_ROOT = VAR_PATH / "media-tests"  # noqa: F405
 
-# Available CMS page template for tests purposes only
-TEST_PAGE_TEMPLATES = "pages/test.html"
-CMS_TEMPLATES.append(  # noqa: F405
-    (TEST_PAGE_TEMPLATES, "test-basic"),
-)
+# All test are written for english language
+LANGUAGE_CODE = "en"
+# Ensure english language is available
+if "en" not in [k for k, v in LANGUAGES]:
+    LANGUAGES = LANGUAGES + (("en", "English"),)
 
 # Use dedicated definitions for test environment
 CANOPY_SLOT_DEFINITIONS = "canopy.definitions.tests"

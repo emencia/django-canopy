@@ -5,17 +5,7 @@ from pathlib import Path
 
 import pytest
 
-from django.conf import settings
-from django.utils.translation import to_locale
-
 import canopy
-from canopy.factories.cms import PageFactory
-
-import faker.config
-
-
-# Enforce default faker local to follow Django language setting
-faker.config.DEFAULT_LOCALE = to_locale(settings.LANGUAGE_CODE)
 
 
 class FixturesSettingsTestMixin(object):
@@ -95,28 +85,3 @@ def tests_settings():
                 print(tests_settings.format("Application version: {VERSION}"))
     """
     return FixturesSettingsTestMixin()
-
-
-@pytest.fixture(scope="function")
-def cms_homepage(db, settings):
-    """
-    Create a random CMS homepage.
-
-    At least a homepage is required for test using views else CMS will make fails
-    view url resolving since of its middleware.
-    """
-    page = PageFactory(
-        **{
-            "title__title": "Homepage",
-            "parent": None,
-            "reverse_id": "homepage",
-            "set_homepage": True,
-            "should_publish": True,
-            "in_navigation": True,
-            "title__language": settings.LANGUAGE_CODE,
-            "title__slug": "homepage",
-            "template": settings.TEST_PAGE_TEMPLATES,
-        }
-    )
-
-    return page
