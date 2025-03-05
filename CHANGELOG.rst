@@ -3,10 +3,10 @@
 Changelog
 =========
 
-Version 0.3.0 - Unreleased
+Version 0.3.0 - 2025/03/05
 --------------------------
 
-* Refactored Slot definition with dataclasses;
+* Refactored Slot definition with Pydantic's dataclasses;
 * Adapted Controller form view to the new registry;
 * Removed CMS from sandbox requirements;
 * Added Slot inlines with sortable2 in Controller admin details;

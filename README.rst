@@ -2,6 +2,9 @@
 .. _Django: https://www.djangoproject.com/
 .. _DjangoCMS: https://docs.django-cms.org/en/release-3.11.x/
 .. _django-admin-sortable2: https://github.com/jrief/django-admin-sortable2
+.. _django-crispy-forms: https://github.com/django-crispy-forms/django-crispy-forms
+.. _crispy-bootstrap5: https://github.com/django-crispy-forms/crispy-bootstrap5
+.. _pydantic: https://docs.pydantic.dev/latest/
 
 ======
 Canopy
@@ -24,9 +27,9 @@ Dependencies
 * `Python`_>=3.10;
 * `Django`_>=4.0,<5.0;
 * `django-admin-sortable2`_>=2.2.4;
-* django-crispy-forms>=2.3;
-* crispy-bootstrap5>=2024.10;
-* pydantic>=2.10.0;
+* `django-crispy-forms`_>=2.3;
+* `crispy-bootstrap5`_>=2024.10;
+* `pydantic`_>=2.10.0;
 
 
 Links
