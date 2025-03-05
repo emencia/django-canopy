@@ -1,0 +1,32 @@
+///
+/// Color theme mode toggler for Bootstrap styles
+///
+
+.color-mode-switcher {
+    position: absolute !important;
+    left: 0;
+    bottom: 0;
+    color: var(--site-menu-color);
+
+    @include media-breakpoint-down(lg) {
+        // Shift hamburger toggler, this is dependant from navbar integration
+        right: 3.5rem !important;
+    }
+
+    .btn {
+        color: inherit;
+    }
+
+    &.bd-mode-toggle {
+        z-index: 1500;
+
+        .dropdown-menu .active .bi {
+            display: block !important;
+        }
+    }
+
+    .bi {
+        vertical-align: -.125em;
+        fill: currentColor;
+    }
+}

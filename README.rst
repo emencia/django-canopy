@@ -24,7 +24,9 @@ Dependencies
 * `Python`_>=3.10;
 * `Django`_>=4.0,<5.0;
 * `django-admin-sortable2`_>=2.2.4;
-* (optional) `DjangoCMS`_>=3.11.0,<4.0;
+* django-crispy-forms>=2.3;
+* crispy-bootstrap5>=2024.10;
+* pydantic>=2.10.0;
 
 
 Links
