@@ -33,7 +33,7 @@ class ControllerBaseForm:
         except KeyError:
             raise KeyError(
                 "Controller form requires a Controller object to be given as a non "
-                "positional argument."
+                "positional argument (eg: 'controller=my_controller')."
             )
 
         super().__init__(*args, **kwargs)

@@ -12,8 +12,11 @@ def test_bound_field_options(db):
     """
     Input field should be properly built from its definitions and slot options
 
-    TODO: Should test again form build including options, schema validation from
+    TODO: Should test against form build including options, schema validation from
     Slot model must be done first, then the forge could implement options applying.
+
+    NOTE: schema validation is not a thing anymore. Ever we ignore this level of
+    validation
     """
     controller = ControllerFactory()
     SlotFactory(

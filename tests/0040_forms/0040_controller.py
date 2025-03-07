@@ -1,15 +1,52 @@
 from freezegun import freeze_time
 
-from canopy.forms.forge import FormClassForge
+from django import forms
+
 from canopy.factories import ControllerFactory, SlotFactory
+from canopy.forms import SlotAdminForm
+from canopy.forms.forge import FormClassForge
+from canopy.models import Controller, Slot
+from canopy.utils.tests import build_post_data_from_object
+
+
+def test_fields(db):
+    """
+    Built form should contains all fields from Controller slots.
+    """
+    controller = ControllerFactory()
+    SlotFactory(
+        controller=controller,
+        kind="text-simple",
+        label="Full name",
+        name="fullname",
+        required=True,
+    )
+    SlotFactory(
+        controller=controller,
+        kind="text-simple",
+        label="Email",
+        name="email",
+        required=False,
+    )
+
+    forge = FormClassForge()
+    ControllerForm = forge.get_form(controller)
+    form = ControllerForm(None, controller=controller)
+
+    fields = [
+        (k, v.__class__)
+        for k, v in form.fields.items()
+    ]
+    assert fields == [
+        ("fullname", forms.CharField),
+        ("email", forms.CharField),
+    ]
 
 
 @freeze_time("2012-10-15 10:00:00")
 def test_form_save(db):
     """
-    Valid submited data should be saved as Entry object.
-
-    TODO: This seems much more the scope of forms tests than forge tests.
+    Valid submited data should be saved as an Entry object.
     """
     controller = ControllerFactory()
     SlotFactory(

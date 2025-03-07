@@ -13,8 +13,6 @@ registry = get_registry()
 class FormClassForge:
     """
     Forge to build a form from given definitions and slots.
-
-    TODO: Use registry instead of manually loading definitions.
     """
     def __init__(self, default_klass=None):
         self.default_klass = default_klass or ControllerBaseForm
@@ -147,9 +145,6 @@ class FormClassForge:
             class: The form class built from given slot scheme.
         """
         self.klass = klass or self.default_klass
-        definitions = (
-            definitions if isinstance(definitions, dict) else registry.get_all()
-        )
 
         scheme = self.normalize_scheme(scheme)
 

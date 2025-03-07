@@ -65,6 +65,9 @@ class Slot(models.Model):
     """
     Required name string. This is the input name used in HTML and slot
     representation. Name is unique for a same controller.
+
+    TODO: This should be validated to be a proper input identifier (no special
+    characters, especially quotes).
     """
 
     required = models.BooleanField(
