@@ -15,8 +15,8 @@ def test_bound_field_options(db):
     TODO: Should test against form build including options, schema validation from
     Slot model must be done first, then the forge could implement options applying.
 
-    NOTE: schema validation is not a thing anymore. Ever we ignore this level of
-    validation
+    NOTE: schema validation is not a thing anymore. We would need to implement it
+    before but it may not be accurate.
     """
     controller = ControllerFactory()
     SlotFactory(

@@ -6,7 +6,8 @@ from canopy.utils.tests import flatten_form_errors
 def test_construct_form_class_with_type():
     """
     Demonstrate usage of ``type()`` to build class with given arguments. It is
-    the way to programmatically build a form class.
+    the way to programmatically build a form class. This does not involve anything
+    from Canopy internal code.
     """
     attrs = {
         "your_name": forms.CharField(max_length=50, required=True),

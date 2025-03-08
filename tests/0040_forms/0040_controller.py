@@ -46,7 +46,7 @@ def test_fields(db):
 @freeze_time("2012-10-15 10:00:00")
 def test_form_save(db):
     """
-    Valid submited data should be saved as an Entry object.
+    Validated data should be saved as an Entry object.
     """
     controller = ControllerFactory()
     SlotFactory(

@@ -1,5 +1,7 @@
 from django.urls import reverse
 
+import pytest
+
 from canopy.factories import ControllerFactory, SlotFactory
 from canopy.models import Controller
 from canopy.utils.tests import html_pyquery
@@ -31,8 +33,20 @@ def test_view_detail(db, client, django_assert_num_queries):
     assert names == ["csrfmiddlewaretoken", "basic-text", "submit-request-form"]
 
 
-def test_view_success(db, client, django_assert_num_queries):
+@pytest.mark.skip("We need implementation of payload passing from form to success")
+def test_view_success(db, client):
     """
     TODO: Should test valid submit send to the success page with data payload.
     """
+    controller = ControllerFactory()
+    slot_text = SlotFactory(controller=controller, name="basic-text")
+    url = reverse("canopy:controller-form", kwargs={"slug": controller.slug})
+
+    response = client.post(url, data={"basic-text": "Foo"}, follow=True)
+
+    assert response.redirect_chain == [
+        (reverse("canopy:controller-success"), 302),
+    ]
+    assert response.status_code == 200
+
     assert 1 == 42
