@@ -231,7 +231,7 @@ class DefinitionsRegistry:
         if isinstance(kind, models.Model) and hasattr(kind, "kind"):
             kind = kind.kind
 
-        # NOTE: Not sure copy is required here, DefinitionsRegistry.get() because it
+        # NOTE: Not sure copy is required here because it
         # should returns a Kind object that is frozen. However it is right, copy should
         # be removed here but 'get_kind_attr_**()' methods should use it for their
         # return.

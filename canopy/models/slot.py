@@ -49,6 +49,15 @@ class Slot(models.Model):
     Required slot kind string. Determine the kind of slot.
     """
 
+    # status = models.CharField(
+    #     _("status"),
+    #     max_length=100,
+    # )
+    """
+    Required status string choice. Allow to enable, disable or hide (for internal post
+    process?).
+    """
+
     label = models.CharField(
         _("field label"),
         max_length=100,

@@ -54,8 +54,8 @@ class ControllerBaseForm:
             dict: The dictionnary of slot values for the JSONfield.
         """
         return {
-            name: self.cleaned_data.get(parameters["name"], None)
-            for name, parameters in self.controller.slot_fields_values.items()
+            name: self.cleaned_data.get(name, None)
+            for name in self.controller.get_slots().values_list("name", flat=True)
         }
 
     def save(self, *args, commit=True, **kwargs):

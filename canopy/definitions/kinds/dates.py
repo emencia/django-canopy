@@ -9,3 +9,17 @@ DateKind = Kind(
     name=_("Date"),
     field=KindField(klass=forms.DateField)
 )
+
+
+DatetimeKind = Kind(
+    identifier="datetime",
+    name=_("Date and time"),
+    field=KindField(klass=forms.DateTimeField)
+)
+
+
+TimeKind = Kind(
+    identifier="time",
+    name=_("Time"),
+    field=KindField(klass=forms.TimeField)
+)

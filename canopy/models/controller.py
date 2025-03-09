@@ -70,8 +70,13 @@ class Controller(models.Model):
         """
         return reverse("canopy:controller-form", kwargs={"slug": self.slug})
 
-    def slot_values(self, queryset=None):
+    def get_slots(self):
+        return self.slot_set.all()
+
+    def DEPRECATED_slot_values(self, queryset=None):
         """
+        DEPRECATED
+
         Returns a dictionnary which contains all controller slot values.
 
         Keyword Arguments:
@@ -88,6 +93,7 @@ class Controller(models.Model):
             item["name"]: item
             for item in queryset.values(
                 "kind",
+                # "status",
                 "label",
                 "name",
                 "required",
@@ -100,8 +106,10 @@ class Controller(models.Model):
         }
 
     @cached_property
-    def slot_fields_values(self):
+    def DEPRECATED_slot_fields_values(self):
         """
+        DEPRECATED
+
         Returns the slots fields values.
 
         NOTE: This property exists because we plan to have non field slots. In future

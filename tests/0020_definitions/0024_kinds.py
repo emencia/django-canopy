@@ -4,16 +4,6 @@ from canopy.definitions import DefinitionsRegistry
 from canopy.factories import ControllerFactory, SlotFactory
 
 
-@pytest.mark.skip("Do not work yet since model does not use registry yet")
-def test_get_kind_definition_from_controller(db):
-    registry = DefinitionsRegistry()
-
-    slot_foo = SlotFactory(controller=ControllerFactory(), kind="dummy")
-    slot_foo.full_clean()
-
-    assert registry.get_definition("dummy").name == "Dummy"
-
-
 def test_get_kind_attr_initials():
     """
     Method should returns field options initial values for given kind.

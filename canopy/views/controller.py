@@ -19,7 +19,7 @@ class ControllerFormView(FormView):
 
     def get_object(self):
         try:
-            # TODO: Use select_related for slots ?
+            # TODO: Use select_related for slots
             obj = Controller.objects.get(slug=self.kwargs["slug"])
         except Controller.DoesNotExist:
             raise Http404(

@@ -1,6 +1,5 @@
 .. _Python: https://www.python.org/
 .. _Django: https://www.djangoproject.com/
-.. _DjangoCMS: https://docs.django-cms.org/en/release-3.11.x/
 .. _django-admin-sortable2: https://github.com/jrief/django-admin-sortable2
 .. _django-crispy-forms: https://github.com/django-crispy-forms/django-crispy-forms
 .. _crispy-bootstrap5: https://github.com/django-crispy-forms/crispy-bootstrap5
