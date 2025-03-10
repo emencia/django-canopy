@@ -1,7 +1,6 @@
 from django.db import models
 from django.urls import reverse
 from django.utils import timezone
-from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
 
 
@@ -70,56 +69,17 @@ class Controller(models.Model):
         """
         return reverse("canopy:controller-form", kwargs={"slug": self.slug})
 
+    def get_success_url(self):
+        """
+        Return absolute URL to the controller success view.
+
+        Returns:
+            string: An URL.
+        """
+        return reverse("canopy:controller-success", kwargs={"slug": self.slug})
+
     def get_slots(self):
         return self.slot_set.all()
-
-    def DEPRECATED_slot_values(self, queryset=None):
-        """
-        DEPRECATED
-
-        Returns a dictionnary which contains all controller slot values.
-
-        Keyword Arguments:
-            queryset (Queryset): A custom queryset to use instead of the default one
-                which get all controller slot objects.
-
-        Returns:
-            dict: Slot values, each item key is the slot name and value is a dict of
-            values.
-        """
-        queryset = queryset or self.slot_set.all()
-
-        return {
-            item["name"]: item
-            for item in queryset.values(
-                "kind",
-                # "status",
-                "label",
-                "name",
-                "required",
-                "position",
-                "help_text",
-                "initial",
-                "field_options",
-                "widget_options",
-            )
-        }
-
-    @cached_property
-    def DEPRECATED_slot_fields_values(self):
-        """
-        DEPRECATED
-
-        Returns the slots fields values.
-
-        NOTE: This property exists because we plan to have non field slots. In future
-        we would have non field slot that we would distinct here to only return fields
-        values
-
-        Returns:
-            dict: Fields values.
-        """
-        return self.slot_values()
 
     def save(self, *args, **kwargs):
         # Auto update 'last_update' value on each save

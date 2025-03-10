@@ -23,6 +23,15 @@ urlpatterns = [
 
 # This is only needed when using runserver with settings "DEBUG" enabled
 if settings.DEBUG:
+    try:
+        import debug_toolbar  # noqa: F401,F403
+    except ImportError:
+        pass
+    else:
+        urlpatterns.append(
+            path("__debug__/", include("debug_toolbar.urls"))
+        )
+
     urlpatterns = (
         urlpatterns
         + staticfiles_urlpatterns()

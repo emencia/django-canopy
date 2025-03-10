@@ -1,11 +1,10 @@
 from django import forms
 from django.http import Http404
-from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
 
-from ..models import Controller
+from ..models import Controller, Entry
 from ..forms.forge import FormClassForge
 
 
@@ -15,11 +14,9 @@ class ControllerFormView(FormView):
     """
     template_name = "canopy/controller/form.html"
     form_class = forms.Form  # Not used
-    success_url = reverse_lazy("canopy:controller-success")
 
     def get_object(self):
         try:
-            # TODO: Use select_related for slots
             obj = Controller.objects.get(slug=self.kwargs["slug"])
         except Controller.DoesNotExist:
             raise Http404(
@@ -28,6 +25,9 @@ class ControllerFormView(FormView):
             )
 
         return obj
+
+    def get_success_url(self):
+        return self.object.get_success_url()
 
     def get_context_data(self, **kwargs):
         kwargs["controller"] = self.object
@@ -44,19 +44,12 @@ class ControllerFormView(FormView):
         forge = FormClassForge()
         return forge.get_form(self.object)
 
-    def get_form_kwargs(self):
-        """
-        Give controller object as form argument.
-        """
-        kwargs = super().get_form_kwargs()
-        kwargs["controller"] = self.object
-        return kwargs
-
     def form_valid(self, form):
         """
         Save request as an Entry when submitted form data has been validated.
         """
-        form.save()
+        created = form.save()
+        self.request.session["canopy_last_entry_id"] = created.id
 
         return super().form_valid(form)
 
@@ -85,3 +78,35 @@ class ControllerSuccessView(TemplateView):
     Basic template view to respond to form submit success.
     """
     template_name = "canopy/controller/success.html"
+
+    def get_controller_object(self):
+        try:
+            obj = Controller.objects.get(slug=self.kwargs["slug"])
+        except Controller.DoesNotExist:
+            raise Http404(
+                _("No %(verbose_name)s found matching the query")
+                % {"verbose_name": Controller._meta.verbose_name}
+            )
+
+        return obj
+
+    def get_entry_object(self):
+        last_entry = self.request.session.pop("canopy_last_entry_id")
+        if last_entry:
+            try:
+                obj = self.controller.entry_set.get(pk=last_entry)
+            except Entry.DoesNotExist:
+                return None
+            else:
+                return obj
+
+    def get(self, request, *args, **kwargs):
+        self.controller = self.get_controller_object()
+        self.entry = self.get_entry_object()
+        return super().get(request, *args, **kwargs)
+
+    def get_context_data(self, **kwargs):
+        kwargs["controller"] = self.controller
+        kwargs["entry"] = self.entry
+
+        return super().get_context_data(**kwargs)

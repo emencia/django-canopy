@@ -120,6 +120,7 @@ class FormClassForge:
             attrs.update(extra_attrs)
         # NOTE: Maybe we could directly attach the controller object instead of having
         # to pass it as argument
+        attrs.update({"controller": controller})
 
         # Build class
         base_classes = (self.klass, forms.Form,)

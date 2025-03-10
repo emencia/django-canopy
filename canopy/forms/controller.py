@@ -24,13 +24,21 @@ class ControllerBaseForm:
         allow to insert HTML between fields but will be ignored from 'save()'.
 
     Keyword Arguments:
-        controller (Controller): Required Controller model object.
+        controller (Controller): Required Controller model object. Not that a form built
+            from forge will already have the ``controller`` set as attribute, however
+            you may override it there for some specific purpose (like testing).
     """
 
     def __init__(self, *args, **kwargs):
+        # Try to get Controller object from argument if it has not already been set
+        # from forge
         try:
             self.controller = kwargs.pop("controller")
         except KeyError:
+            pass
+
+        # Validate we have a controller finally
+        if not getattr(self, "controller", None):
             raise KeyError(
                 "Controller form requires a Controller object to be given as a non "
                 "positional argument (eg: 'controller=my_controller')."
@@ -46,9 +54,6 @@ class ControllerBaseForm:
 
         This requires that attribute ``cleaned_data``  has been correctly filled (like
         after the method ``clean()`` usage).
-
-        Each slot data is named after its slot name not the field name, the latter is
-        only used to get the value from ``cleaned_data``.
 
         Returns:
             dict: The dictionnary of slot values for the JSONfield.
