@@ -3,10 +3,7 @@ from freezegun import freeze_time
 from django import forms
 
 from canopy.factories import ControllerFactory, SlotFactory
-from canopy.forms import SlotAdminForm
 from canopy.forms.forge import FormClassForge
-from canopy.models import Controller, Slot
-from canopy.utils.tests import build_post_data_from_object
 
 
 def test_fields(db):

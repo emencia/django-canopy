@@ -13,7 +13,24 @@ def test_definition_names():
     assert registry.names() == []
 
     registry.load("canopy.definitions.tests")
-    assert sorted(registry.names()) == ["boolean", "email", "text-simple", "textarea"]
+    assert sorted(registry.names()) == [
+        "boolean",
+        "choice-list",
+        "choice-radio",
+        "date",
+        "datetime",
+        "decimal",
+        "email",
+        "integer",
+        "ip-address",
+        "ip4-address",
+        "ip6-address",
+        "multiple-choice-checkbox",
+        "multiple-choice-list",
+        "text-simple",
+        "textarea",
+        "time",
+    ]
 
 
 def test_has_kind_definition():
@@ -26,20 +43,6 @@ def test_has_kind_definition():
     assert registry.has("nope") is False
 
 
-def test_get_definition():
-    """
-    'get' method should returns definition from its name, if it exists else a default
-    value.
-    """
-    registry = DefinitionsRegistry()
-    registry.load("canopy.definitions.tests")
-
-    assert registry.get("nope") is None
-    assert registry.get("nope", "niet") == "niet"
-    assert registry.get("nope", default="niet") == "niet"
-    assert registry.get("boolean").name == "Boolean"
-
-
 def test_get_definition_from_controller(db):
     """
     'get_definition' method returns the definition for given kind.
@@ -49,7 +52,7 @@ def test_get_definition_from_controller(db):
 
     # Without argument, the default definition is returned
     default_def = registry.get_definition()
-    assert default_def.name == registry.get(registry.get_default()).name
+    assert default_def.identifier == registry.get_default()
 
     controller = ControllerFactory()
     slot = SlotFactory(controller=controller, kind="text-simple")
@@ -68,9 +71,19 @@ def test_get_choices():
     registry.load("canopy.definitions.tests")
     assert registry.get_choices() == [
         ("boolean", "Boolean"),
+        ("choice-list", "Choice list for a single selection"),
+        ("choice-radio", "Radio buttons for a single selection"),
+        ("date", "Date"), ("datetime", "Date and time"),
+        ("decimal", "Decimal"),
         ("email", "Email"),
-        ("textarea", "Textarea"),
+        ("integer", "Integer"),
+        ("ip-address", "IPv4 or IPv6 address"),
+        ("ip4-address", "IPv4 address"), ("ip6-address", "IPv6 address"),
+        ("multiple-choice-list", "Choice list for multiple selection"),
+        ("multiple-choice-checkbox", "Checkboxes for multiple selection"),
         ("text-simple", "Simple text"),
+        ("textarea", "Textarea"),
+        ("time", "Time"),
     ]
 
 

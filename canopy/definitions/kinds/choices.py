@@ -9,7 +9,6 @@ ChoiceListKind = Kind(
     name=_("Choice list for a single selection"),
     field=KindField(
         klass=forms.ChoiceField,
-        initials={"max_length": 255},
         options={
             "choices": forms.CharField(
                 required=True
@@ -24,7 +23,6 @@ ChoiceRadioKind = Kind(
     name=_("Radio buttons for a single selection"),
     field=KindField(
         klass=forms.ChoiceField,
-        initials={"max_length": 255},
         options={
             "choices": forms.CharField(
                 required=True
@@ -40,7 +38,6 @@ MultipleChoiceListKind = Kind(
     name=_("Choice list for multiple selection"),
     field=KindField(
         klass=forms.MultipleChoiceField,
-        initials={},
         options={
             "choices": forms.CharField(
                 required=True

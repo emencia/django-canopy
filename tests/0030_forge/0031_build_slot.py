@@ -15,14 +15,14 @@ def test_build_slot_widget_basic(db):
     forge = FormClassForge()
 
     # Field attributes are not included when built directly from widget itself
-    kind = registry.get(textarea.kind)
+    kind = registry.get_definition(textarea.kind)
     text_widget = forge.build_slot_widget(kind.widget)
     assert text_widget.render("foofield", "") == (
         '<textarea name="foofield" cols="40" rows="10">\n</textarea>'
     )
 
     # Extra options can be given to overrides the defaults or add new ones
-    kind = registry.get(textarea.kind)
+    kind = registry.get_definition(textarea.kind)
     text_widget = forge.build_slot_widget(kind.widget, slot_options={
         "rows": 42,
         "required": "true",

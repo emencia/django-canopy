@@ -2,7 +2,6 @@ from django import forms
 from django.utils.translation import gettext_lazy as _
 
 from ..exceptions import ControllerError
-from ..models import Controller
 from .controller import ControllerBaseForm
 
 
@@ -16,29 +15,6 @@ class FormClassForge:
     """
     def __init__(self, default_klass=None):
         self.default_klass = default_klass or ControllerBaseForm
-
-    def DEPRECATED_normalize_to_schema(self, content):
-        """
-        DEPRECATED
-
-        Normalize given content as a proper slot schema.
-
-        This is somewhat of a shortand to get a slot schema from multiple supported
-        types.
-
-        Arguments:
-            content (object): Either a dict, a list or a Controller instance. Dict or
-                list format must be a valid slot schema.
-
-        Returns:
-            dict: A slot schema suitable for ``get_form_fields``.
-        """
-        if isinstance(content, list) or isinstance(content, tuple):
-            content = dict(content)
-        elif isinstance(content, Controller):
-            content = content.slot_values()
-
-        return content
 
     def build_slot_widget(self, widget, slot_options=None):
         """
@@ -75,14 +51,14 @@ class FormClassForge:
             django.forms.Field: Built (unbound) field object.
         """
         if not registry.has(slot.kind):
-            msg = _("Slot definition does not exists for given name: {}")
+            msg = _("Kind definition does not exists for given name: {}")
             raise ControllerError(msg.format(slot.kind))
 
-        kind = registry.get(slot.kind)
+        kind = registry.get_definition(slot.kind)
 
         # Get the field definition
         field_definition = kind.field
-        field_kwargs = registry.get_kind_attr_initials(kind=slot.kind)
+        field_kwargs = field_definition.initials
         # NOTE: Currently we just pass initial field attribute values from the Kind
         # definition but concretely they should be updated with the corresponding Slot
         # json values. Alike already do.

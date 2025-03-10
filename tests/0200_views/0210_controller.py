@@ -3,7 +3,6 @@ from django.urls import reverse
 import pytest
 
 from canopy.factories import ControllerFactory, SlotFactory
-from canopy.models import Controller
 from canopy.utils.tests import html_pyquery
 
 
@@ -13,7 +12,7 @@ def test_view_detail(db, client, django_assert_num_queries):
     structure.
     """
     controller = ControllerFactory()
-    slot_text = SlotFactory(controller=controller, name="basic-text")
+    SlotFactory(controller=controller, name="basic-text")
     url = reverse("canopy:controller-form", kwargs={"slug": controller.slug})
 
     with django_assert_num_queries(2):
@@ -39,7 +38,7 @@ def test_view_success(db, client):
     TODO: Should test valid submit send to the success page with data payload.
     """
     controller = ControllerFactory()
-    slot_text = SlotFactory(controller=controller, name="basic-text")
+    SlotFactory(controller=controller, name="basic-text")
     url = reverse("canopy:controller-form", kwargs={"slug": controller.slug})
 
     response = client.post(url, data={"basic-text": "Foo"}, follow=True)

@@ -1,7 +1,4 @@
-import pytest
-
 from canopy.definitions import DefinitionsRegistry
-from canopy.factories import ControllerFactory, SlotFactory
 
 
 def test_get_kind_attr_initials():

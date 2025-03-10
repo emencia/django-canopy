@@ -30,7 +30,24 @@ def test_load_module():
     assert registry.has("boolean") is True
     assert registry.has("email") is True
 
-    assert sorted(registry.names()) == ["boolean", "email", "text-simple", "textarea"]
+    assert sorted(registry.names()) == [
+        "boolean",
+        "choice-list",
+        "choice-radio",
+        "date",
+        "datetime",
+        "decimal",
+        "email",
+        "integer",
+        "ip-address",
+        "ip4-address",
+        "ip6-address",
+        "multiple-choice-checkbox",
+        "multiple-choice-list",
+        "text-simple",
+        "textarea",
+        "time",
+    ]
 
 
 def test_load_reset():

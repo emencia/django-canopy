@@ -152,32 +152,6 @@ class DefinitionsRegistry:
         """
         return name in self.definitions
 
-    def get(self, name, default=None):
-        """
-        Get definition from given key name.
-
-        .. Warning::
-            This is only to be used when you are sure the returned definition won't be
-            altered further from your code else you will mutate its content during
-            current Python session.
-
-            Prefer to use ``SlotDefinitionsRegistry.get_definition(..)`` instead
-            that is safe against mutations. If you are not able to do so, use
-            ``copy.deepcopy()`` on returned definition.
-
-        Arguments:
-            name (string): Key name to get.
-
-        Keyword Arguments:
-            default (string): Default value to return if given key name does not
-                exists. On default, the default value is None.
-
-        Returns:
-            dict: The definition for given key name if it exists else the default
-                value.
-        """
-        return self.definitions.get(name, default)
-
     def get_all(self):
         """
         Shortcut method on ``definitions`` attribute.
@@ -185,7 +159,7 @@ class DefinitionsRegistry:
         Returns:
             dict: All registered definitions.
         """
-        return self.definitions
+        return copy.deepcopy(self.definitions)
 
     def get_choices(self):
         """
@@ -197,7 +171,7 @@ class DefinitionsRegistry:
         """
         return [
             (k, v.name)
-            for k, v in self.definitions.items()
+            for k, v in self.get_all().items()
         ]
 
     def get_default(self):
@@ -231,11 +205,8 @@ class DefinitionsRegistry:
         if isinstance(kind, models.Model) and hasattr(kind, "kind"):
             kind = kind.kind
 
-        # NOTE: Not sure copy is required here because it
-        # should returns a Kind object that is frozen. However it is right, copy should
-        # be removed here but 'get_kind_attr_**()' methods should use it for their
-        # return.
-        return copy.deepcopy(self.get(kind))
+        # Return a copy to protect definitions from mutations
+        return copy.deepcopy(self.definitions.get(kind))
 
     def get_kind_attr_options(self, attrname, kind=None):
         """

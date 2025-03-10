@@ -6,4 +6,21 @@ def test_cached_initialized_registry():
     from canopy.definitions.registry import get_registry
     registry = get_registry()
 
-    assert sorted(registry.names()) == ["boolean", "email", "text-simple", "textarea"]
+    assert sorted(registry.names()) == [
+        "boolean",
+        "choice-list",
+        "choice-radio",
+        "date",
+        "datetime",
+        "decimal",
+        "email",
+        "integer",
+        "ip-address",
+        "ip4-address",
+        "ip6-address",
+        "multiple-choice-checkbox",
+        "multiple-choice-list",
+        "text-simple",
+        "textarea",
+        "time",
+    ]
