@@ -8,7 +8,7 @@ def test_build_slot_widget_basic(db):
     Method should build a correct Widget object from a slot.
     """
     registry = DefinitionsRegistry()
-    registry.load("canopy.definitions.tests")
+    registry.load("canopy.definitions.defaults")
 
     textarea = SlotFactory(label="Foo", name="foo", kind="textarea")
 

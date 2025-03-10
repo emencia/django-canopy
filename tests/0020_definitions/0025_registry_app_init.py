@@ -14,6 +14,7 @@ def test_cached_initialized_registry():
         "datetime",
         "decimal",
         "email",
+        "file",
         "integer",
         "ip-address",
         "ip4-address",

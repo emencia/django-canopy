@@ -12,7 +12,7 @@ def test_definition_names():
     registry = DefinitionsRegistry()
     assert registry.names() == []
 
-    registry.load("canopy.definitions.tests")
+    registry.load("canopy.definitions.defaults")
     assert sorted(registry.names()) == [
         "boolean",
         "choice-list",
@@ -21,6 +21,7 @@ def test_definition_names():
         "datetime",
         "decimal",
         "email",
+        "file",
         "integer",
         "ip-address",
         "ip4-address",
@@ -38,7 +39,7 @@ def test_has_kind_definition():
     'has' method check if definition name exists in registry.
     """
     registry = DefinitionsRegistry()
-    registry.load("canopy.definitions.tests")
+    registry.load("canopy.definitions.defaults")
     assert registry.has("boolean") is True
     assert registry.has("nope") is False
 
@@ -48,7 +49,7 @@ def test_get_definition_from_controller(db):
     'get_definition' method returns the definition for given kind.
     """
     registry = DefinitionsRegistry()
-    registry.load("canopy.definitions.tests")
+    registry.load("canopy.definitions.defaults")
 
     # Without argument, the default definition is returned
     default_def = registry.get_definition()
@@ -68,7 +69,7 @@ def test_get_choices():
     registry = DefinitionsRegistry()
     assert registry.get_choices() == []
 
-    registry.load("canopy.definitions.tests")
+    registry.load("canopy.definitions.defaults")
     assert registry.get_choices() == [
         ("boolean", "Boolean"),
         ("choice-list", "Choice list for a single selection"),
@@ -76,6 +77,7 @@ def test_get_choices():
         ("date", "Date"), ("datetime", "Date and time"),
         ("decimal", "Decimal"),
         ("email", "Email"),
+        ("file", "File upload"),
         ("integer", "Integer"),
         ("ip-address", "IPv4 or IPv6 address"),
         ("ip4-address", "IPv4 address"), ("ip6-address", "IPv6 address"),
@@ -99,13 +101,13 @@ def test_get_set_default():
         registry.get_default()
 
     # Definitions module can define a default kind
-    registry.load("canopy.definitions.tests")
+    registry.load("canopy.definitions.defaults")
     assert registry.get_default() == "text-simple"
 
     # Default kind can also be defined directly from loader, overriding possible
     # default from module
     registry.reset()
-    registry.load("canopy.definitions.tests", default="boolean")
+    registry.load("canopy.definitions.defaults", default="boolean")
     assert registry.get_default() == "boolean"
 
     # A specific method allow to define a default kind without loader
@@ -122,7 +124,7 @@ def test_get_kind_attr_options(db):
     'get_kind_attr_options' method field or widget options for given kind
     """
     registry = DefinitionsRegistry()
-    registry.load("canopy.definitions.tests")
+    registry.load("canopy.definitions.defaults")
 
     controller = ControllerFactory()
     slot = SlotFactory(controller=controller, kind="text-simple")

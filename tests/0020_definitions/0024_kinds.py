@@ -6,7 +6,7 @@ def test_get_kind_attr_initials():
     Method should returns field options initial values for given kind.
     """
     registry = DefinitionsRegistry()
-    registry.load("canopy.definitions.tests")
+    registry.load("canopy.definitions.defaults")
 
     assert registry.get_kind_attr_initials("boolean") == {}
 
@@ -18,7 +18,7 @@ def test_get_kind_attr_options():
     Method should returns field options for given kind.
     """
     registry = DefinitionsRegistry()
-    registry.load("canopy.definitions.tests")
+    registry.load("canopy.definitions.defaults")
 
     assert registry.get_kind_attr_options("field", "boolean") == {}
 

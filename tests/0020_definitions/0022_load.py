@@ -26,7 +26,7 @@ def test_load_module():
     registry = DefinitionsRegistry()
 
     # It is ok to give an empty dict
-    registry.load("canopy.definitions.tests")
+    registry.load("canopy.definitions.defaults")
     assert registry.has("boolean") is True
     assert registry.has("email") is True
 
@@ -38,6 +38,7 @@ def test_load_module():
         "datetime",
         "decimal",
         "email",
+        "file",
         "integer",
         "ip-address",
         "ip4-address",

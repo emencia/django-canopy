@@ -39,6 +39,11 @@ from canopy.forms.forge import FormClassForge
         '<input type="text" name="foofield" value="foovalue">',
     ),
     (
+        "file",
+        '<input type="file" name="foofield">',
+        '<input type="file" name="foofield">',
+    ),
+    (
         "time",
         '<input type="text" name="foofield" value="">',
         '<input type="text" name="foofield" value="foovalue">',

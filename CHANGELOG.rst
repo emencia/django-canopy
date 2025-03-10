@@ -3,6 +3,14 @@
 Changelog
 =========
 
+Version 0.3.1 - Unreleased
+--------------------------
+
+* Added many more Kind definitions to cover the basic useful Django form fields;
+* Continued test coverage improvements;
+* Cleaned some useless Forge and Registry methods;
+
+
 Version 0.3.0 - 2025/03/05
 --------------------------
 
