@@ -3,12 +3,14 @@
 Changelog
 =========
 
-Version 0.3.1 - Unreleased
+Version 0.3.1 - 2025/03/11
 --------------------------
 
 * Added many more Kind definitions to cover the basic useful Django form fields;
 * Continued test coverage improvements;
 * Cleaned some useless Forge and Registry methods;
+* Changed form view so it store the created Entry ID in session;
+* Improved success view so it knows about its related Controller and Entry;
 
 
 Version 0.3.0 - 2025/03/05
