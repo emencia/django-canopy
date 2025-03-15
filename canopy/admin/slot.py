@@ -68,8 +68,8 @@ class SlotAdmin(admin.ModelAdmin):
 
     def get_readonly_fields(self, request, obj=None):
         """
-        Originally field_options and widget_options should be hidden but during
-        development we want to see what they are holding
+        Theorically field_options and widget_options should be hidden. But during
+        development we still want to see what they are holding.
         """
         return self.readonly_fields + ("field_options", "widget_options")
 

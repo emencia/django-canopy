@@ -56,3 +56,7 @@ class Kind:
     name: Union[str, Any]
     field: KindField
     widget: KindWidget = field(default=None)
+    # TODO: expect a single callable or null
+    # rendering = Union(Any, None)
+    # TODO: expect a list of callables
+    # validators = list = field(default_factory=list)
