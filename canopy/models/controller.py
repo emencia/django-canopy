@@ -78,8 +78,11 @@ class Controller(models.Model):
         """
         return reverse("canopy:controller-success", kwargs={"slug": self.slug})
 
+    def get_data(self):
+        return self.entry_set.all().order_by("created")
+
     def get_slots(self):
-        return self.slot_set.all()
+        return self.slot_set.all().order_by("position")
 
     def save(self, *args, **kwargs):
         # Auto update 'last_update' value on each save

@@ -1,0 +1,18 @@
+<table>
+    <thead>
+        <tr>
+            {% for name, data in data_matrix.items %}
+                <th>{{ name }}</th>
+            {% endfor %}
+        </tr>
+    </thead>
+    <tbody>
+        {% for entry in data_rows %}
+        <tr>
+            {% for value in entry %}
+                <td>{{ value }}</td>
+            {% endfor %}
+        </tr>
+        {% endfor %}
+    </tbody>
+</table>

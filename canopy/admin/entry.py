@@ -1,5 +1,3 @@
-import json
-
 from django.contrib import admin
 from django.utils.safestring import mark_safe
 from django.utils.translation import gettext_lazy as _
@@ -30,7 +28,7 @@ class EntryAdmin(admin.ModelAdmin):
             - Kind need to define a possible "rendering" function instead of default
               one (a str());
             - HTML should be built from a template so it's easier to improve and can
-              overrided (like for with admin styles);
+              be overrided (like for with admin styles);
         """
         if not obj.data:
             return mark_safe("<p>Stored data is empty</p>")

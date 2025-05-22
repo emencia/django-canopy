@@ -42,8 +42,9 @@ class Kind:
     Slot kind definition
 
     .. Todo::
-        We currently use ``Any`` for ``name`` attribute since ``gettext_lazy`` is a
-        proxy function that i can't get to work with Pydantic yet.
+        We currently use ``Any`` as possible value (in addition to str) for ``name``
+        attribute since ``gettext_lazy`` is a proxy function that i can't get to work
+        yet with Pydantic.
 
     Attributes:
         identifier (string): Unique identifier amongst all kinds. Used to index and
@@ -56,7 +57,7 @@ class Kind:
     name: Union[str, Any]
     field: KindField
     widget: KindWidget = field(default=None)
-    # TODO: expect a single callable or null
-    # rendering = Union(Any, None)
+    # Expect a single callable or null, default to str()
+    rendering: Union[Any, None] = field(default=str)
     # TODO: expect a list of callables
     # validators = list = field(default_factory=list)

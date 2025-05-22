@@ -8,7 +8,7 @@ from ..exceptions import DefinitionRegistryError
 
 class DefinitionsRegistry:
     """
-    Definition registry for slot kinds.
+    Definition registry for Slot kinds.
 
     Attributes:
         initialized (boolean): A flag attribute to indicate if registry has already
@@ -186,29 +186,29 @@ class DefinitionsRegistry:
 
     def get_definition(self, kind=None):
         """
-        Get a definition from a Slot object or a ``kind`` name.
+        Get a Kind definition from a Slot object or a kind name.
 
         Keyword Arguments:
-            kind (string or Slot): the kind key name or Slot instance to search for
-                definition. If this argument is an empty value, the default kind choice
-                key will be used if available.
+            kind (string or Slot): Either the kind key name as a string or a model
+                object instance with a ``kind`` attribute. If this argument is an empty
+                value the default kind choice key will be used if available.
 
         Returns:
             dict: Kind definition. This is a copy of the registred definition to avoid
             registry mutations. Return can be None if no kind has been given and there
             is no defined default definition name.
         """
-        # Use default kind if argument is an empty value
-        kind = kind or self.get_default()
-
         # If kind is model instance with "kind" attribute get the kind name from it
         if isinstance(kind, models.Model) and hasattr(kind, "kind"):
             kind = kind.kind
 
+        # Use default kind if value is empty
+        kind = kind or self.get_default()
+
         # Return a copy to protect definitions from mutations
         return copy.deepcopy(self.definitions.get(kind))
 
-    def get_kind_attr_options(self, attrname, kind=None):
+    def get_definition_options(self, attrname, kind=None):
         """
         Get all options for the field or widget from a kind (given or default).
 
@@ -229,11 +229,11 @@ class DefinitionsRegistry:
 
         return getattr(kind, attrname).options
 
-    def get_kind_attr_initials(self, kind=None):
+    def get_definition_initials(self, kind=None):
         """
         Get all initial values for the field from a kind (given or default).
 
-        This is only about kind field since widget does not manage any initials.
+        This is only about the Kind field since widget does not manage any initials.
 
         Keyword Arguments:
             kind (string or Slot): the Slot kind key to search for definition. On

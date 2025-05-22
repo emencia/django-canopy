@@ -57,7 +57,7 @@ def build_options_form(attrname, slot=None):
     return type(
         "SlotOptionsForm",
         base_classes,
-        registry.get_kind_attr_options(
+        registry.get_definition_options(
             attrname,
             kind=slot.kind if slot else None
         )

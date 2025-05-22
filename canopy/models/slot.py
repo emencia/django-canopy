@@ -76,7 +76,7 @@ class Slot(models.Model):
     representation. Name is unique for a same controller.
 
     TODO: This should be validated to be a proper input identifier (no special
-    characters, especially quotes).
+    characters and especially no quotes).
     """
 
     required = models.BooleanField(

@@ -10,6 +10,7 @@ class EntryFactory(factory.django.DjangoModelFactory):
     Factory to create instance of a Entry model.
     """
     controller = factory.SubFactory(ControllerFactory)
+    created = None
 
     class Meta:
         model = Entry
