@@ -16,7 +16,8 @@ class ControllerAdmin(SortableAdminBase, admin.ModelAdmin):
     list_display = (
         "title",
         "slug",
-        "version",
+        "form_template",
+        "success_template",
     )
     prepopulated_fields = {"slug": ("title",)}
     search_fields = [
@@ -24,6 +25,11 @@ class ControllerAdmin(SortableAdminBase, admin.ModelAdmin):
     ]
     inlines = [
         SlotAdminInline,
+    ]
+    readonly_fields = [
+        "version",
+        "created",
+        "last_update",
     ]
 
     def get_urls(self):

@@ -6,7 +6,12 @@ Changelog
 Development
 ***********
 
-TODO
+* Rebooted migrations;
+* Added Controller data exporter, yet to be exposed in the admin;
+* Added Controller data visualizer in admin;
+* Added new Controller fields to select custom template for form page and success page,
+  and available templates are defined respectively from settings
+  ``CANOPY_CONTROLLER_FORM_TEMPLATES`` and  ``CANOPY_CONTROLLER_SUCCESS_TEMPLATES``;
 
 
 Version 0.3.1 - 2025/03/11

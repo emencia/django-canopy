@@ -20,8 +20,14 @@ class ControllerFormView(FormView):
     """
     View to display a Controller form.
     """
-    template_name = "canopy/controller/form.html"
+    template_name = None
     form_class = forms.Form  # Not used
+
+    def get_template_names(self):
+        """
+        Template is determined from the object attribute ``form_template``.
+        """
+        return [self.object.form_template]
 
     def get_object(self):
         try:
@@ -85,7 +91,13 @@ class ControllerSuccessView(TemplateView):
     """
     Basic template view to respond to form submit success.
     """
-    template_name = "canopy/controller/success.html"
+    template_name = None
+
+    def get_template_names(self):
+        """
+        Template is determined from the object attribute ``success_template``.
+        """
+        return [self.controller.success_template]
 
     def get_controller_object(self):
         try:

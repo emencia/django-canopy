@@ -3,6 +3,11 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
+from ..choices import (
+    get_controller_form_template_choices, get_controller_form_template_default,
+    get_controller_success_template_choices, get_controller_success_template_default,
+)
+
 
 class Controller(models.Model):
     """
@@ -31,6 +36,26 @@ class Controller(models.Model):
     Required unique slug string.
     """
 
+    form_template = models.CharField(
+        _("form page template"),
+        choices=get_controller_form_template_choices(),
+        default=get_controller_form_template_default(),
+        help_text=_(
+            "Template that will be used to render the form page."
+        ),
+        max_length=255,
+    )
+
+    success_template = models.CharField(
+        _("success page template"),
+        choices=get_controller_success_template_choices(),
+        default=get_controller_success_template_default(),
+        help_text=_(
+            "Template that will be used to render the success page."
+        ),
+        max_length=255,
+    )
+
     version = models.PositiveSmallIntegerField(
         _("version"),
         default=0,
@@ -38,8 +63,8 @@ class Controller(models.Model):
         null=False,
     )
     """
-    Required version positive integer. This would be automatically updated on
-    slot changes.
+    Required version positive integer. This will be automatically updated on slot
+    changes.
     """
 
     created = models.DateTimeField(auto_now_add=True)

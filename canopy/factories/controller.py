@@ -1,6 +1,9 @@
 import factory
 
 from ..models import Controller
+from ..choices import (
+    get_controller_form_template_default, get_controller_success_template_default,
+)
 
 
 class ControllerFactory(factory.django.DjangoModelFactory):
@@ -13,3 +16,11 @@ class ControllerFactory(factory.django.DjangoModelFactory):
 
     class Meta:
         model = Controller
+
+    @factory.lazy_attribute
+    def form_template(self):
+        return get_controller_form_template_default()
+
+    @factory.lazy_attribute
+    def success_template(self):
+        return get_controller_success_template_default()
