@@ -1,11 +1,19 @@
 from django import forms
+from django.conf import settings
 from django.http import Http404
 from django.utils.translation import gettext as _
+from django.views.generic import ListView
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import FormView
+from django.views.generic.detail import SingleObjectMixin
 
+from canopy.definitions.registry import get_registry
 from ..models import Controller, Entry
 from ..forms.forge import FormClassForge
+from .mixins import AdminContext
+
+
+registry = get_registry()
 
 
 class ControllerFormView(FormView):
@@ -110,3 +118,97 @@ class ControllerSuccessView(TemplateView):
         kwargs["entry"] = self.entry
 
         return super().get_context_data(**kwargs)
+
+
+class ControllerAdminDataVisualizerView(AdminContext, SingleObjectMixin, ListView):
+    """
+    Admin view to list Controller data entries structured according to the current
+    Controller slot.
+    """
+    model = Controller
+    template_name = "admin/canopy/controller/visualizer.html"
+    http_method_names = ["get", "head", "options", "trace"]
+    paginate_by = settings.CANOPY_ADMIN_CONTROLLER_DATA_PAGINATION
+
+    def get_queryset(self):
+        """
+        Queryset to list controller entries
+        """
+        return self.object.get_data().values("id", "created", "data")
+
+    def get_object(self):
+        """
+        Get the Category object for details
+        """
+        pk = self.kwargs.get("pk")
+
+        try:
+            obj = self.model.objects.filter(**{"id": pk}).get()
+        except self.model.DoesNotExist:
+            raise Http404(
+                _("No {} found matching the query").format(
+                    self.model._meta.verbose_name
+                )
+            )
+
+        return obj
+
+    def get_data_matrix(self):
+        """
+        Queryset to list controller entries
+        """
+        return {
+            item["name"]: {
+                "label": item["label"],
+                "rendering": registry.get_definition(kind=item["kind"]).rendering,
+            }
+            for item in self.object.get_slots().values("label", "name", "kind")
+        }
+
+    def get_data_rows(self, matrix, data):
+        """
+        Build entry rows that match the matrix columns.
+
+        Row columns are added in order, if a column match in row data it is rendered
+        using the Slot rendering function else it will be None.
+        """
+        rows = []
+
+        for entry in data:
+            row = {"entry_id": entry["id"], "entry_created": entry["created"]}
+            row.update({
+                colname: (
+                    colopts["rendering"](entry["data"][colname])
+                    if colname in entry["data"]
+                    else None
+                )
+                for colname, colopts in matrix.items()
+            })
+            rows.append(row)
+
+        return rows
+
+    def get_context_data(self, **kwargs):
+        """
+        Append specific admin context
+        """
+        context = super().get_context_data(**kwargs)
+
+        matrix = self.get_data_matrix()
+
+        context.update({
+            "object": self.object,
+            "data_matrix": matrix,
+            "data_rows": self.get_data_rows(matrix, context["object_list"]),
+            "title": _("Vizualize data for '%(title)s'") % {"title": self.object.title},
+        })
+
+        return context
+
+    def get(self, request, *args, **kwargs):
+        """
+        Return HTML response with rendered content.
+        """
+        self.object = self.get_object()
+
+        return super().get(request, *args, **kwargs)

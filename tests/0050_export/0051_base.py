@@ -1,27 +1,6 @@
-import json
-import types
-
 from canopy.definitions import DefinitionsRegistry
 from canopy.factories import ControllerFactory, EntryFactory, SlotFactory
 from canopy.export import DummyKind, BaseExporter
-
-
-class ExtendedJsonEncoder(json.JSONEncoder):
-    """
-    Add support to serialize a Callable
-
-    Usage sample: ::
-
-        json.dumps(..., cls=ExtendedJsonEncoder)
-    """
-    def default(self, obj):
-        if callable(obj):
-            return obj.__name__
-        if isinstance(obj, types.GeneratorType):
-            return obj.__name__
-
-        # Let the base class default method raise the TypeError
-        return json.JSONEncoder.default(self, obj)
 
 
 def test_render_for_kind():

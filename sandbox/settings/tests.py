@@ -19,3 +19,6 @@ LANGUAGE_CODE = "en"
 # Ensure english language is available
 if "en" not in [k for k, v in LANGUAGES]:
     LANGUAGES = LANGUAGES + (("en", "English"),)
+
+# Restrain pagination limit to ease pagination check in tests
+CANOPY_ADMIN_CONTROLLER_DATA_PAGINATION = 5

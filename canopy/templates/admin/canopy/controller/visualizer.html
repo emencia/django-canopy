@@ -1,0 +1,69 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static "admin/css/changelists.css" %}">
+{% endblock %}
+
+{% block bodyclass %} app-canopy model-slot change-list{% endblock %}
+
+{% if not is_popup %}
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:app_list' app_label=opts.app_label %}">{{ opts.app_config.verbose_name }}</a>
+&rsaquo; {% if has_view_permission %}<a href="{% url opts|admin_urlname:'changelist' %}">{{ opts.verbose_name_plural|capfirst }}</a>{% else %}{{ opts.verbose_name_plural|capfirst }}{% endif %}
+&rsaquo; {{ title }}
+</div>
+{% endblock %}
+{% endif %}
+
+{% block content %}
+<h2>{% blocktrans %}Controller data{% endblocktrans %}</h2>
+
+<div id="changelist">
+    <div class="changelist-form-container">
+        <div class="results">
+            <table id="canopy-controller-data">
+                <thead>
+                    <tr>
+                        <th scope="col" class="column-entry-id">
+                            <div class="text"><span>ID</span></div>
+                            <div class="clear"></div>
+                        </th>
+                        <th scope="col" class="column-entry-created">
+                            <div class="text"><span>{% translate "Created" %}</span></div>
+                            <div class="clear"></div>
+                        </th>
+                        {% for k, v in data_matrix.items %}
+                            <th scope="col" class="column-{{ k }}">
+                                <div class="text"><span>{{ v.label }}</span></div>
+                                <div class="clear"></div>
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in data_rows %}
+                        <tr>
+                            {% for k, v in row.items %}
+                                <td class="field-{{ k }} nowrap">
+                                {% if k == "entry_id" %}
+                                    <a href="{% url "admin:canopy_entry_change" object_id=v %}">{{ v }}</a>
+                                {% else %}
+                                    <span>{% if v is None %}-{% else %}{{ v }}{% endif %}</span>
+                                {% endif %}
+                                </td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        {% include "admin/canopy/pagination.html" %}
+    </div>
+
+</div>
+{% endblock %}

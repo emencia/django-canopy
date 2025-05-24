@@ -1,0 +1,18 @@
+{% load canopy i18n %}{% comment %}
+Reproducing the legacy pagination HTML from Django admin that does not work well with
+a non-admin generic view.
+{% endcomment %}
+{% spaceless %}
+    {% if paginator and paginator.num_pages > 1 %}
+        <p class="paginator">
+            {% for page_num in paginator.page_range %}
+                {% if page_num == page_obj.number %}
+                    <span class="this-page">{{ page_num }}</span>
+                {% else %}
+                    <a href="{% querystring page=page_num %}" {% if forloop.last %} class="end"{% endif %}>{{ page_num }}</a>
+                {% endif %}
+            {% endfor %}
+            {{ paginator.count }} entries
+        </p>
+    {% endif %}
+{% endspaceless %}

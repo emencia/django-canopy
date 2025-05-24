@@ -1,8 +1,10 @@
 from django.contrib import admin
+from django.urls import path
 
 from adminsortable2.admin import SortableAdminBase
 
 from ..models import Controller
+from ..views import ControllerAdminDataVisualizerView
 from .slot import SlotAdminInline
 
 
@@ -23,3 +25,21 @@ class ControllerAdmin(SortableAdminBase, admin.ModelAdmin):
     inlines = [
         SlotAdminInline,
     ]
+
+    def get_urls(self):
+        """
+        Set some additional custom admin views
+        """
+        urls = super().get_urls()
+
+        extra_urls = [
+            path(
+                "visualizer/<int:pk>/",
+                self.admin_site.admin_view(
+                    ControllerAdminDataVisualizerView.as_view(),
+                ),
+                name="canopy_controller_data_visualizer",
+            ),
+        ]
+
+        return extra_urls + urls
