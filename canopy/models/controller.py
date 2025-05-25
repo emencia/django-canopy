@@ -36,6 +36,18 @@ class Controller(models.Model):
     Required unique slug string.
     """
 
+    enabled = models.BooleanField(
+        verbose_name=_("enabled"),
+        default=True,
+        blank=True,
+        help_text=_(
+            "If form is not enabled it can not be reached or submitted anymore."
+        ),
+    )
+    """
+    Optional boolean to enable or disable the form.
+    """
+
     form_template = models.CharField(
         _("form page template"),
         choices=get_controller_form_template_choices(),

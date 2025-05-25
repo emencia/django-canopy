@@ -13,6 +13,8 @@ Request form generator.
 
 This is yet a prototype, many features are planned but far from implementation.
 
+Due to its development stage, any new versions may totally reboot migrations.
+
 
 Features
 ********

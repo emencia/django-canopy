@@ -1,0 +1,8 @@
+{% extends "canopy/base.html" %}
+{% load i18n %}
+
+{% block app_content %}{% spaceless %}
+    <h2>{{ controller.title }}</h2>
+
+    <p>{% translate "This form is disabled." %}</p>
+{% endspaceless %}{% endblock app_content %}

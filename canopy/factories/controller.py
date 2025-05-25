@@ -12,6 +12,7 @@ class ControllerFactory(factory.django.DjangoModelFactory):
     """
     title = factory.Sequence(lambda n: "Controller {0}".format(n))
     slug = factory.Sequence(lambda n: "controller-{0}".format(n))
+    enabled = True
     version = 0
 
     class Meta:

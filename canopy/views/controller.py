@@ -20,13 +20,18 @@ class ControllerFormView(FormView):
     """
     View to display a Controller form.
     """
-    template_name = None
+    template_name_for_disabled = "canopy/controller/form/disabled.html"
     form_class = forms.Form  # Not used
 
     def get_template_names(self):
         """
-        Template is determined from the object attribute ``form_template``.
+        Template is determined from the object attribute ``form_template`` if controller
+        is enabled else if it is disabled it will be the unique template from view
+        attribute ``template_name_for_disabled``.
         """
+        if self.object.enabled is not True:
+            return [self.template_name_for_disabled]
+
         return [self.object.form_template]
 
     def get_object(self):
@@ -46,9 +51,6 @@ class ControllerFormView(FormView):
     def get_context_data(self, **kwargs):
         kwargs["controller"] = self.object
 
-        if "form" not in kwargs:
-            kwargs["form"] = self.get_form()
-
         return super().get_context_data(**kwargs)
 
     def get_form_class(self):
@@ -67,18 +69,46 @@ class ControllerFormView(FormView):
 
         return super().form_valid(form)
 
+    def response_when_disabled(self):
+        """
+        Return a specific response when controller is disabled.
+
+        Either it returns a rendered response with a minimal context (just the
+        controller object) on default or a Http404 response when settings
+        ``CANOPY_CONTROLLER_EXCEPTION_WHEN_DISABLED`` is true.
+        """
+        if self.object.enabled is not True:
+            if settings.CANOPY_CONTROLLER_EXCEPTION_WHEN_DISABLED is True:
+                raise Http404(_("This form is disabled"))
+            else:
+                # We use a very minimal context to avoid performing any useless
+                # operation
+                return self.render_to_response({"controller": self.object})
+
     def get(self, request, *args, **kwargs):
         """
         Display blank form
         """
         self.object = self.get_object()
-        return self.render_to_response(self.get_context_data())
+
+        disabled_response = self.response_when_disabled()
+
+        return (
+            disabled_response
+            if disabled_response
+            else self.render_to_response(self.get_context_data())
+        )
 
     def post(self, request, *args, **kwargs):
         """
         Receive request and save or display errors.
         """
         self.object = self.get_object()
+
+        disabled_response = self.response_when_disabled()
+        if disabled_response:
+            return disabled_response
+
         form = self.get_form()
 
         if not form.is_valid():
@@ -91,13 +121,34 @@ class ControllerSuccessView(TemplateView):
     """
     Basic template view to respond to form submit success.
     """
-    template_name = None
+    template_name_for_disabled = "canopy/controller/success/disabled.html"
 
     def get_template_names(self):
         """
-        Template is determined from the object attribute ``success_template``.
+        Template is determined from the object attribute ``success_template`` if
+        controller is enabled else if it is disabled it will be the unique template
+        from view attribute ``template_name_for_disabled``.
         """
+        if self.controller.enabled is not True:
+            return [self.template_name_for_disabled]
+
         return [self.controller.success_template]
+
+    def response_when_disabled(self):
+        """
+        Return a specific response when controller is disabled.
+
+        Either it returns a rendered response with a minimal context (just the
+        controller object) on default or a Http404 response when settings
+        ``CANOPY_CONTROLLER_EXCEPTION_WHEN_DISABLED`` is true.
+        """
+        if self.controller.enabled is not True:
+            if settings.CANOPY_CONTROLLER_EXCEPTION_WHEN_DISABLED is True:
+                raise Http404(_("This form is disabled"))
+            else:
+                # We use a very minimal context to avoid performing any useless
+                # operation
+                return self.render_to_response({"controller": self.controller})
 
     def get_controller_object(self):
         try:
@@ -111,7 +162,7 @@ class ControllerSuccessView(TemplateView):
         return obj
 
     def get_entry_object(self):
-        last_entry = self.request.session.pop("canopy_last_entry_id")
+        last_entry = self.request.session.pop("canopy_last_entry_id", None)
         if last_entry:
             try:
                 obj = self.controller.entry_set.get(pk=last_entry)
@@ -122,7 +173,13 @@ class ControllerSuccessView(TemplateView):
 
     def get(self, request, *args, **kwargs):
         self.controller = self.get_controller_object()
+
+        disabled_response = self.response_when_disabled()
+        if disabled_response:
+            return disabled_response
+
         self.entry = self.get_entry_object()
+
         return super().get(request, *args, **kwargs)
 
     def get_context_data(self, **kwargs):

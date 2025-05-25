@@ -65,7 +65,7 @@ class ControllerBaseForm:
 
     def save(self, *args, commit=True, **kwargs):
         """
-        Save request as an Entry object.
+        Save request in a new Entry object.
 
         Entry object will be created with a relation to the Controller and will be
         marked with the current Controller version.

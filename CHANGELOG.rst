@@ -12,6 +12,8 @@ Development
 * Added new Controller fields to select custom template for form page and success page,
   and available templates are defined respectively from settings
   ``CANOPY_CONTROLLER_FORM_TEMPLATES`` and  ``CANOPY_CONTROLLER_SUCCESS_TEMPLATES``;
+* Added new Controller field to enable (default) or disable it so its form and success
+  pages can not be submitted or reached but the data is still keeped;
 
 
 Version 0.3.1 - 2025/03/11

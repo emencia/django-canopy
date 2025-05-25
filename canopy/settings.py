@@ -16,6 +16,13 @@ Disabling this setting is for very specific usage and especially when Canopy is 
 used programmatically.
 """
 
+CANOPY_CONTROLLER_EXCEPTION_WHEN_DISABLED = False
+"""
+When ``True`` form and success pages will raise a Http404 if controller is disabled else
+when this setting is ``False`` the pages render the template dedicated to disabled
+controller.
+"""
+
 CANOPY_ADMIN_CONTROLLER_DATA_PAGINATION = 100
 """
 Entry per page limit for pagination in Controller data admin, you can set it to ``None``

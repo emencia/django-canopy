@@ -16,6 +16,7 @@ class ControllerAdmin(SortableAdminBase, admin.ModelAdmin):
     list_display = (
         "title",
         "slug",
+        "enabled",
         "form_template",
         "success_template",
     )
