@@ -6,6 +6,12 @@ Changelog
 Development
 ***********
 
+TODO
+
+
+Version 0.3.2 - 2025/05/26
+**************************
+
 * Rebooted migrations;
 * Added Controller data exporter, yet to be exposed in the admin;
 * Added Controller data visualizer in admin;

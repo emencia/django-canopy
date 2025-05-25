@@ -1,4 +1,4 @@
-# Frozen requirement versions for 'django-canopy==0.3.2rc5' installation
+# Frozen requirement versions for 'django-canopy==0.3.2' installation
 Django==5.2.1
 django-admin-sortable2==2.2.8
 django-crispy-forms==2.4
