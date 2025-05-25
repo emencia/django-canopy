@@ -14,6 +14,9 @@ Development
   ``CANOPY_CONTROLLER_FORM_TEMPLATES`` and  ``CANOPY_CONTROLLER_SUCCESS_TEMPLATES``;
 * Added new Controller field to enable (default) or disable it so its form and success
   pages can not be submitted or reached but the data is still keeped;
+* Fixed development installation for latest version of PIP and setuptools;
+* Upgraded backend to support Django 5.1 and 5.2;
+* Upgraded frontend to Bootstrap 5.3.6 and bootstrap-icon 1.11.10;
 
 
 Version 0.3.1 - 2025/03/11

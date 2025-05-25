@@ -13,7 +13,7 @@ SPHINX_RELOAD_BIN=$(PYTHON_BIN) docs/sphinx_reload.py
 TOX_BIN=$(VENV_PATH)/bin/tox
 TWINE_BIN=$(VENV_PATH)/bin/twine
 
-DJANGO_MANAGE=$(SANDBOX_DIR)/manage.py
+DJANGO_MANAGE=manage.py
 
 PACKAGE_NAME=django-canopy
 PACKAGE_SLUG=django_canopy
