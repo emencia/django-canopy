@@ -1,0 +1,11 @@
+{% load static %}{% spaceless %}
+    {% if widget.value %}
+        <a class="related-widget-wrapper-link change-related"
+        title="Modifier l’objet Form controller sélectionné"
+        href="{{ widget.value }}">
+            <img src="{% static "admin/img/icon-changelink.svg" %}" alt="" width="24" height="24">
+        </a>
+    {% else %}
+        -
+    {% endif %}
+{% endspaceless %}

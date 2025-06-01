@@ -1,20 +1,53 @@
 from django import forms
+from django.forms.widgets import Input
+from django.utils.translation import gettext_lazy as _
+from django.urls import reverse
 
 from ..models import Slot
 
 from .options import build_options_form
 
 
+class NonEditableLinkInput(Input):
+    """
+    A dummy widget that has no input and just display a link.
+    """
+    input_type = "text"
+    template_name = "canopy/widgets/non_editable_link.html"
+
+
+class SlotAdminInlineForm(forms.ModelForm):
+    """
+    Slot form for admin inline.
+    """
+    # Append a dummy field just to include Slot edition URL in inline list without to
+    # to patch change view template.
+    edit_url = forms.CharField(
+        label=_("Edit"),
+        required=False,
+        widget=NonEditableLinkInput
+    )
+
+    class Meta:
+        model = Slot
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        # Fill 'edit_url' value with change view URL if there is a Slot instance given
+        if kwargs.get("instance", None):
+            self.fields["edit_url"].initial = reverse(
+                "admin:canopy_slot_change",
+                args=(kwargs["instance"].id,),
+            )
+        else:
+            self.fields["edit_url"].initial = None
+
+
 class SlotAdminForm(forms.ModelForm):
     """
-    Slot form for admin.
-
-    NOTE:
-
-    * The slot form will have to watch for "kind" change since changing to another
-      kind means to reset 'field_options' and 'widget_options';
-    * There is currently no clean method since options fields are naturally validated;
-
+    Slot form for admin detail.
     """
     class Meta:
         model = Slot

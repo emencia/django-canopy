@@ -6,7 +6,9 @@ Changelog
 Development
 ***********
 
-TODO
+* Added Slot edition link into inline Slot list in controller change view because the
+  inline form can not contains every possible Slot fields, user will have to go into
+  the Slot change view to edit everything;
 
 
 Version 0.3.2 - 2025/05/26
