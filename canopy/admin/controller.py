@@ -41,7 +41,7 @@ class ControllerAdmin(SortableAdminBase, admin.ModelAdmin):
 
         extra_urls = [
             path(
-                "visualizer/<int:pk>/",
+                "<int:pk>/data/",
                 self.admin_site.admin_view(
                     ControllerAdminDataVisualizerView.as_view(),
                 ),

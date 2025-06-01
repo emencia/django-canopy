@@ -3,7 +3,7 @@ from django.contrib import admin
 from adminsortable2.admin import SortableTabularInline
 
 from ..models import Slot
-from ..forms import SlotAdminForm
+from ..forms import SlotAdminForm, SlotAdminInlineForm
 
 
 @admin.register(Slot)
@@ -17,9 +17,9 @@ class SlotAdmin(admin.ModelAdmin):
         We tried to inject some field inputs for the Slot options
         (field&widget). I dont really remember the stage of advancement of this way.
 
-        With the definition registry interface it may be easier to retrieve options
-        datas to build fields, but i don't know about to fill them with data from JSON,
-        how to validate their value.
+        Whatever with the definition registry interface it may be easier to retrieve
+        options datas to build fields, but i don't know about to fill them with data
+        from JSON, how to validate their value.
     """
     form = SlotAdminForm
     list_display = (
@@ -78,6 +78,8 @@ class SlotAdminInline(SortableTabularInline):
     """
     Slot inline model admin for Controller admin.
     """
+    form = SlotAdminInlineForm
     model = Slot
-    exclude = ["help_text", "initial", "field_options", "widget_options", ]
+    fields = ["absolute_url", "kind", "label", "name", "required"]
+    exclude = ["help_text", "initial", "field_options", "widget_options"]
     extra = 0

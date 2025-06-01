@@ -5,16 +5,29 @@ from ..models import Slot
 from .options import build_options_form
 
 
+class SlotAdminInlineForm(forms.ModelForm):
+    """
+    Slot form for admin inline.
+    """
+
+    # TODO: This should be turned into a custom field that just display a link ?
+    absolute_url = forms.DateField(required=False)
+
+    class Meta:
+        model = Slot
+        fields = "__all__"
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+
+        print("💚 Michou is here")
+
+        #self.fields["absolute_url"] = forms.DateField(required=False)
+
+
 class SlotAdminForm(forms.ModelForm):
     """
-    Slot form for admin.
-
-    NOTE:
-
-    * The slot form will have to watch for "kind" change since changing to another
-      kind means to reset 'field_options' and 'widget_options';
-    * There is currently no clean method since options fields are naturally validated;
-
+    Slot form for admin detail.
     """
     class Meta:
         model = Slot
