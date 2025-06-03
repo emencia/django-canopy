@@ -70,6 +70,10 @@ class ControllerBaseForm:
         Entry object will be created with a relation to the Controller and will be
         marked with the current Controller version.
 
+        TODO:
+            Do no directly save into db anymore and use handlers instead. How we can
+            configure one or many handlers on Controller is still need to be modelized.
+
         Keyword Arguments:
             commit (boolean): If True the object is saved in database. Else the
             instance is created but not saved, the object is still returned so you

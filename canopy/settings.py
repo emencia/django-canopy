@@ -42,3 +42,14 @@ CANOPY_CONTROLLER_SUCCESS_TEMPLATES = (
 """
 Available templates to render Controller success page.
 """
+
+CANOPY_CONTROLLER_DATA_HANDLERS = (
+    ("canopy.handlers.SaveInDbHandler", _("Save in database")),
+    ("canopy.handlers.SendToStaffHandler", _("Send text to staff")),
+    ("canopy.handlers.SendToWriterHandler", _("Send text to writer")),
+)
+"""
+A list of the available handlers to enable on a Controller to manage submitted data.
+
+TODO: Not sure about to store python path in db, an unique identifier instead ?
+"""
