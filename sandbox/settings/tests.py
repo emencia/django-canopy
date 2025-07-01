@@ -20,5 +20,9 @@ LANGUAGE_CODE = "en"
 if "en" not in [k for k, v in LANGUAGES]:
     LANGUAGES = LANGUAGES + (("en", "English"),)
 
+
+# Don't send any email for real, just push them to the shell output
+EMAIL_BACKEND = "django.core.mail.backends.console.EmailBackend"
+
 # Restrain pagination limit to ease pagination check in tests
 CANOPY_ADMIN_CONTROLLER_DATA_PAGINATION = 5

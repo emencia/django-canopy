@@ -121,6 +121,9 @@ class Controller(models.Model):
     def get_slots(self):
         return self.slot_set.all().order_by("position")
 
+    def get_handlers(self):
+        return self.handler_set.all().order_by()
+
     def save(self, *args, **kwargs):
         # Auto update 'last_update' value on each save
         self.last_update = timezone.now()

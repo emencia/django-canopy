@@ -1,19 +1,11 @@
 from django import forms
-from django.forms.widgets import Input
 from django.utils.translation import gettext_lazy as _
 from django.urls import reverse
 
 from ..models import Slot
+from ..widgets import NonEditableLinkInput
 
 from .options import build_options_form
-
-
-class NonEditableLinkInput(Input):
-    """
-    A dummy widget that has no input and just display a link.
-    """
-    input_type = "text"
-    template_name = "canopy/widgets/non_editable_link.html"
 
 
 class SlotAdminInlineForm(forms.ModelForm):

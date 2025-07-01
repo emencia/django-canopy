@@ -1,5 +1,7 @@
+from ..choices import get_controller_handler_order
 from ..form_helpers import ControllerViewFormHelper
 from ..models import Entry
+from ..utils.loaders import get_handler_processor_class
 
 
 class ControllerBaseForm:
@@ -13,15 +15,6 @@ class ControllerBaseForm:
         Almost all internal methods are not intended to overwrite ``forms.Form``
         methods and are to be prefixed with an underscore to ensure they won't break
         some obscure ``forms.Form`` mechanic.
-
-    TODO:
-        We should have a way to have silent and automatically fill virtual fields.
-        Like a field to store the IP adress from user request. The field would not be
-        displayed but filled from form (it would need to be passed the Django request
-        object).
-
-        In a similar way we could have non field slot, like a HTML slot that would
-        allow to insert HTML between fields but will be ignored from 'save()'.
 
     Keyword Arguments:
         controller (Controller): Required Controller model object. Not that a form built
@@ -63,6 +56,30 @@ class ControllerBaseForm:
             for name in self.controller.get_slots().values_list("name", flat=True)
         }
 
+    def _process_handlers(self, entry):
+        """
+        Where we should process each controller handler with the entry (unsaved) object.
+
+        TODO: Form clean should allow only for a single same handler type, like no
+        duplicate of "save in db" and at least one handler is required.
+
+        TODO: Handlers should have a priority, so the save in db one is probably the
+        top one to avoid data loss on failure of other handlers.
+
+        TODO: Walk through each related handler that is to be initialized and given
+        the Entry object.
+        """
+        enabled = list(self.controller.get_handlers().values_list("name", flat=True))
+        print("💄 Enabled handlers from controller:", enabled)
+        for name in get_controller_handler_order():
+            print("👷 Defined handler from setting:", name)
+            if name in enabled:
+                print("🚀 Processing entry with handler: {}".format(name))
+                handler = get_handler_processor_class(name)()
+                handler.proceed(entry)
+
+        return
+
     def save(self, *args, commit=True, **kwargs):
         """
         Save request in a new Entry object.
@@ -70,14 +87,10 @@ class ControllerBaseForm:
         Entry object will be created with a relation to the Controller and will be
         marked with the current Controller version.
 
-        TODO:
-            Do no directly save into db anymore and use handlers instead. How we can
-            configure one or many handlers on Controller is still need to be modelized.
-
         Keyword Arguments:
-            commit (boolean): If True the object is saved in database. Else the
-            instance is created but not saved, the object is still returned so you
-            can save it latter. Default to True.
+            commit (boolean): If True the object is processed by handlers. Else the
+            object is created but not processed, the object is still returned so you
+            can process it latter. Default to True.
 
         Returns:
             Entry: Created Entry object.
@@ -89,6 +102,6 @@ class ControllerBaseForm:
         )
 
         if commit is True:
-            created.save()
+             self._process_handlers(created)
 
         return created

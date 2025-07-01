@@ -45,11 +45,37 @@ Available templates to render Controller success page.
 
 CANOPY_CONTROLLER_DATA_HANDLERS = (
     ("canopy.handlers.SaveInDbHandler", _("Save in database")),
-    ("canopy.handlers.SendToStaffHandler", _("Send text to staff")),
-    ("canopy.handlers.SendToWriterHandler", _("Send text to writer")),
+    ("canopy.handlers.SendEmailToStaffHandler", _("Send email to staff")),
+    ("canopy.handlers.SendEmailToWriterHandler", _("Send email to writer")),
 )
 """
 A list of the available handlers to enable on a Controller to manage submitted data.
 
-TODO: Not sure about to store python path in db, an unique identifier instead ?
+The first item must be a valid Python path to the handler class to load.
+
+It is used as the handler choices for Controller and also as the order of processing
+them during form save. This order can be overriden by setting
+``CANOPY_CONTROLLER_DATA_HANDLER_ORDER`` if not empty.
+
+.. Hint::
+    The handler to save Entry in database is commonly the first one to avoid data loss
+    on failure from other handler processing.
+"""
+
+CANOPY_CONTROLLER_DATA_HANDLER_ORDER = None
+"""
+A tuple of controller names (their class path) to defined the priority of handler
+processing. If empty the order from ``CANOPY_CONTROLLER_DATA_HANDLERS`` is used instead.
+
+An example with the default handler choices would be: ::
+
+    CANOPY_CONTROLLER_DATA_HANDLER_ORDER = (
+        "canopy.handlers.SaveInDbHandler",
+        "canopy.handlers.SendEmailToStaffHandler",
+        "canopy.handlers.SendEmailToWriterHandler",
+    )
+
+.. Warning::
+    Any item names from ``CANOPY_CONTROLLER_DATA_HANDLERS`` that are not present in the
+    priorities is simply ignored and won't be processed.
 """

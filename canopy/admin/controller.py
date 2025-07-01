@@ -5,6 +5,7 @@ from adminsortable2.admin import SortableAdminBase
 
 from ..models import Controller
 from ..views import ControllerAdminDataVisualizerView
+from .handler import HandlerAdminInline
 from .slot import SlotAdminInline
 
 
@@ -25,6 +26,7 @@ class ControllerAdmin(SortableAdminBase, admin.ModelAdmin):
         "title",
     ]
     inlines = [
+        HandlerAdminInline,
         SlotAdminInline,
     ]
     readonly_fields = [

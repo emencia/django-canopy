@@ -1,9 +1,11 @@
+from .base import BaseHandler
 from .db import SaveInDbHandler
-from .email import SendTextToStaffHandler, SendTextToWriterHandler
+from .email import SendEmailToStaffHandler, SendEmailToWriterHandler
 
 
 __all__ = [
+    "BaseHandler",
     "SaveInDbHandler",
-    "SendTextToStaffHandler",
-    "SendTextToWriterHandler",
+    "SendEmailToStaffHandler",
+    "SendEmailToWriterHandler",
 ]

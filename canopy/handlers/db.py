@@ -1,13 +1,14 @@
-from .models import Entry
+from ..models import Entry
+
+from .base import BaseHandler
 
 
-class SaveInDbHandler:
-    def __init__(self, *args, **kwargs):
-        pass
+class SaveInDbHandler(BaseHandler):
+    """
+    Handler to save Entry object in database.
+    """
+    def proceed(self, entry, **kwargs):
+        print("🎨 SaveInDbHandler proceeding to save")
+        entry.save()
 
-    def proceed(self, controller, data, **kwargs):
-        created = Entry(
-            controller=controller,
-            version=controller.version,
-            data=data,
-        )
+        return entry

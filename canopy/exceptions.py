@@ -27,6 +27,13 @@ class ControllerError(CanopyBaseException):
     pass
 
 
+class HandlerError(CanopyBaseException):
+    """
+    When the controller encounter an error or invalid data.
+    """
+    pass
+
+
 class DefinitionRegistryError(CanopyBaseException):
     """
     When the definition registry encounter an error.
